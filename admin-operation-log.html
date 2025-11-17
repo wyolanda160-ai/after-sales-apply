@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>操作日志 - 平台总后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#ff4d4f',
+                        info: '#8c8c8c',
+                        'primary-light': '#e6f7ff',
+                        'success-light': '#f6ffed',
+                        'warning-light': '#fff7e6',
+                        'error-light': '#fff1f0',
+                        'border-color': '#e8e8e8',
+                        'text-secondary': '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+                        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)',
+                        'modal': '0 4px 24px rgba(0, 0, 0, 0.15)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .hover-scale-105 {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale-105:hover {
+                transform: scale(1.05);
+            }
+            .active-nav-item {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .badge {
+                @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-success {
+                @apply bg-success text-white hover:bg-success/90;
+            }
+            .btn-warning {
+                @apply bg-warning text-white hover:bg-warning/90;
+            }
+            .btn-error {
+                @apply bg-error text-white hover:bg-error/90;
+            }
+            .btn-outline {
+                @apply border border-border-color text-text-secondary hover:bg-gray-50;
+            }
+            .form-input {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-select {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white;
+            }
+            .form-checkbox {
+                @apply w-4 h-4 text-primary border-border-color rounded focus:ring-primary;
+            }
+            .form-radio {
+                @apply w-4 h-4 text-primary border-border-color focus:ring-primary;
+            }
+            .form-textarea {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary min-h-[100px] resize-y;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-card p-6;
+            }
+            .data-table {
+                @apply w-full min-w-[800px];
+            }
+            .data-table th {
+                @apply px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-secondary uppercase tracking-wider;
+            }
+            .data-table td {
+                @apply px-4 py-4 whitespace-nowrap text-sm border-t border-border-color;
+            }
+            .data-table tr:hover {
+                @apply bg-gray-50;
+            }
+            .form-group {
+                @apply mb-4;
+            }
+            .form-label {
+                @apply block text-sm font-medium text-text-secondary mb-1;
+            }
+            .form-help {
+                @apply text-xs text-text-secondary mt-1;
+            }
+            .timestamp {
+                @apply text-xs text-text-secondary;
+            }
+            .operation-detail {
+                @apply text-sm bg-gray-50 p-3 rounded-md border border-border-color;
+            }
+            .log-level-info {
+                @apply text-primary;
+            }
+            .log-level-success {
+                @apply text-success;
+            }
+            .log-level-warning {
+                @apply text-warning;
+            }
+            .log-level-error {
+                @apply text-error;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md flex flex-col overflow-y-auto">
+            <!-- 品牌标志 -->
+            <div class="h-16 flex items-center justify-center border-b border-border-color">
+                <h1 class="text-xl font-bold text-primary">平台总后台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 py-4">
+                <div class="px-4 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    系统概览
+                </div>
+                <a href="admin-dashboard.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-tachometer w-5 mr-3 text-center"></i>
+                    <span>数据看板</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    售后管理
+                </div>
+                <a href="admin-after-sales-list.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-list-alt w-5 mr-3 text-center"></i>
+                    <span>售后单管理</span>
+                </a>
+                <a href="admin-cod-refund.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-money w-5 mr-3 text-center"></i>
+                    <span>COD退款管理</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    配置管理
+                </div>
+                <a href="admin-after-sales-config.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-cog w-5 mr-3 text-center"></i>
+                    <span>售后配置管理</span>
+                </a>
+                <a href="admin-after-sales-analysis.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-bar-chart w-5 mr-3 text-center"></i>
+                    <span>售后统计分析</span>
+                </a>
+                
+
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-border-color">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full" src="https://picsum.photos/id/1005/200/200" alt="管理员头像">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">张管理员</p>
+                        <p class="text-xs text-text-secondary">超级管理员</p>
+                    </div>
+                    <button class="ml-auto text-text-secondary hover:text-error">
+                        <i class="fa fa-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-text-secondary hover:text-primary mr-4">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <a href="admin-dashboard.html" class="text-text-secondary hover:text-primary text-sm mr-2">首页</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <span class="text-sm font-medium">操作日志</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-md text-sm border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-text-secondary hover:text-primary">
+                            <i class="fa fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-error text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">5</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="main-content">
+                <!-- 功能按钮区 -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold">操作日志</h2>
+                    <div class="flex items-center space-x-3">
+                        <button class="btn btn-outline">
+                            <i class="fa fa-refresh mr-1"></i> 刷新
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fa fa-download mr-1"></i> 导出
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 筛选搜索区 -->
+                <div class="card mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="form-group">
+                            <label class="form-label">操作人</label>
+                            <input type="text" class="form-input" placeholder="请输入操作人用户名或姓名">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">操作类型</label>
+                            <select class="form-select">
+                                <option value="" selected>全部操作类型</option>
+                                <option value="login">登录</option>
+                                <option value="logout">登出</option>
+                                <option value="create">创建</option>
+                                <option value="update">更新</option>
+                                <option value="delete">删除</option>
+                                <option value="review">审核</option>
+                                <option value="config">配置修改</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">操作模块</label>
+                            <select class="form-select">
+                                <option value="" selected>全部模块</option>
+                                <option value="dashboard">数据看板</option>
+                                <option value="after_sales">售后单管理</option>
+                                <option value="cod_refund">COD退款管理</option>
+                                <option value="config">配置管理</option>
+                                <option value="analysis">统计分析</option>
+                                <option value="user">用户管理</option>
+                                <option value="system">系统设置</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">操作结果</label>
+                            <select class="form-select">
+                                <option value="" selected>全部结果</option>
+                                <option value="success">成功</option>
+                                <option value="failure">失败</option>
+                                <option value="warning">警告</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="form-group">
+                            <label class="form-label">操作时间范围</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="date" class="form-input">
+                                <span class="text-text-secondary">至</span>
+                                <input type="date" class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">IP地址</label>
+                            <input type="text" class="form-input" placeholder="请输入IP地址">
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end space-x-3 mt-4">
+                        <button class="btn btn-outline">
+                            重置
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fa fa-search mr-1"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 日志统计卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="card">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary mr-4">
+                                <i class="fa fa-file-text-o text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium">今日日志</h3>
+                                <p class="text-2xl font-bold mt-1">2,345</p>
+                                <p class="text-xs text-text-secondary mt-1">较昨日 <span class="text-success">+12.5%</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-success-light flex items-center justify-center text-success mr-4">
+                                <i class="fa fa-check-circle text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium">成功操作</h3>
+                                <p class="text-2xl font-bold mt-1">1,982</p>
+                                <p class="text-xs text-text-secondary mt-1">成功率 <span class="text-success">84.5%</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-warning-light flex items-center justify-center text-warning mr-4">
+                                <i class="fa fa-exclamation-triangle text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium">警告操作</h3>
+                                <p class="text-2xl font-bold mt-1">213</p>
+                                <p class="text-xs text-text-secondary mt-1">较昨日 <span class="text-error">+5.3%</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-error-light flex items-center justify-center text-error mr-4">
+                                <i class="fa fa-times-circle text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium">失败操作</h3>
+                                <p class="text-2xl font-bold mt-1">150</p>
+                                <p class="text-xs text-text-secondary mt-1">较昨日 <span class="text-success">-2.1%</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 日志列表 -->
+                <div class="card">
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>操作ID</th>
+                                    <th>操作人</th>
+                                    <th>操作类型</th>
+                                    <th>操作模块</th>
+                                    <th>操作结果</th>
+                                    <th>操作时间</th>
+                                    <th>IP地址</th>
+                                    <th>设备信息</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>LOG20230615001</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1001/200/200" alt="用户头像" class="w-8 h-8 rounded-full mr-2">
+                                        <div>
+                                            <div class="font-medium">admin</div>
+                                            <div class="text-xs text-text-secondary">张管理员</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-light text-primary">登录</span>
+                                    </td>
+                                    <td>系统管理</td>
+                                    <td>
+                                        <span class="log-level-success">
+                                            <i class="fa fa-check-circle mr-1"></i> 成功
+                                        </span>
+                                    </td>
+                                    <td>2023-06-15 14:30:25</td>
+                                    <td>192.168.1.100</td>
+                                    <td>Chrome / Windows 10</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline" onclick="viewLogDetail('LOG20230615001')">
+                                            查看详情
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LOG20230615002</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1002/200/200" alt="用户头像" class="w-8 h-8 rounded-full mr-2">
+                                        <div>
+                                            <div class="font-medium">manager01</div>
+                                            <div class="text-xs text-text-secondary">李经理</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success-light text-success">更新</span>
+                                    </td>
+                                    <td>售后单管理</td>
+                                    <td>
+                                        <span class="log-level-success">
+                                            <i class="fa fa-check-circle mr-1"></i> 成功
+                                        </span>
+                                    </td>
+                                    <td>2023-06-15 13:45:12</td>
+                                    <td>192.168.1.101</td>
+                                    <td>Firefox / macOS</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline" onclick="viewLogDetail('LOG20230615002')">
+                                            查看详情
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LOG20230615003</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1003/200/200" alt="用户头像" class="w-8 h-8 rounded-full mr-2">
+                                        <div>
+                                            <div class="font-medium">cs001</div>
+                                            <div class="text-xs text-text-secondary">王客服</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-light text-primary">审核</span>
+                                    </td>
+                                    <td>售后单管理</td>
+                                    <td>
+                                        <span class="log-level-warning">
+                                            <i class="fa fa-exclamation-triangle mr-1"></i> 警告
+                                        </span>
+                                    </td>
+                                    <td>2023-06-15 11:20:38</td>
+                                    <td>192.168.1.102</td>
+                                    <td>Safari / iOS</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline" onclick="viewLogDetail('LOG20230615003')">
+                                            查看详情
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LOG20230615004</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1004/200/200" alt="用户头像" class="w-8 h-8 rounded-full mr-2">
+                                        <div>
+                                            <div class="font-medium">finance01</div>
+                                            <div class="text-xs text-text-secondary">赵财务</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-light text-primary">创建</span>
+                                    </td>
+                                    <td>COD退款管理</td>
+                                    <td>
+                                        <span class="log-level-success">
+                                            <i class="fa fa-check-circle mr-1"></i> 成功
+                                        </span>
+                                    </td>
+                                    <td>2023-06-14 16:50:42</td>
+                                    <td>192.168.1.103</td>
+                                    <td>Chrome / Windows 11</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline" onclick="viewLogDetail('LOG20230615004')">
+                                            查看详情
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LOG20230615005</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1005/200/200" alt="用户头像" class="w-8 h-8 rounded-full mr-2">
+                                        <div>
+                                            <div class="font-medium">op001</div>
+                                            <div class="text-xs text-text-secondary">陈运营</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-error-light text-error">删除</span>
+                                    </td>
+                                    <td>统计分析</td>
+                                    <td>
+                                        <span class="log-level-error">
+                                            <i class="fa fa-times-circle mr-1"></i> 失败
+                                        </span>
+                                    </td>
+                                    <td>2023-06-14 15:30:15</td>
+                                    <td>192.168.1.104</td>
+                                    <td>Edge / Windows 10</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline" onclick="viewLogDetail('LOG20230615005')">
+                                            查看详情
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LOG20230615006</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1006/200/200" alt="用户头像" class="w-8 h-8 rounded-full mr-2">
+                                        <div>
+                                            <div class="font-medium">admin</div>
+                                            <div class="text-xs text-text-secondary">张管理员</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning-light text-warning">配置修改</span>
+                                    </td>
+                                    <td>售后配置管理</td>
+                                    <td>
+                                        <span class="log-level-success">
+                                            <i class="fa fa-check-circle mr-1"></i> 成功
+                                        </span>
+                                    </td>
+                                    <td>2023-06-14 14:20:30</td>
+                                    <td>192.168.1.100</td>
+                                    <td>Chrome / Windows 10</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline" onclick="viewLogDetail('LOG20230615006')">
+                                            查看详情
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LOG20230615007</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1007/200/200" alt="用户头像" class="w-8 h-8 rounded-full mr-2">
+                                        <div>
+                                            <div class="font-medium">cs002</div>
+                                            <div class="text-xs text-text-secondary">刘客服</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-light text-primary">登录</span>
+                                    </td>
+                                    <td>系统管理</td>
+                                    <td>
+                                        <span class="log-level-error">
+                                            <i class="fa fa-times-circle mr-1"></i> 失败
+                                        </span>
+                                    </td>
+                                    <td>2023-06-14 13:45:12</td>
+                                    <td>192.168.1.105</td>
+                                    <td>Firefox / Windows 10</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline" onclick="viewLogDetail('LOG20230615007')">
+                                            查看详情
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LOG20230615008</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1008/200/200" alt="用户头像" class="w-8 h-8 rounded-full mr-2">
+                                        <div>
+                                            <div class="font-medium">manager02</div>
+                                            <div class="text-xs text-text-secondary">吴经理</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success-light text-success">更新</span>
+                                    </td>
+                                    <td>用户管理</td>
+                                    <td>
+                                        <span class="log-level-success">
+                                            <i class="fa fa-check-circle mr-1"></i> 成功
+                                        </span>
+                                    </td>
+                                    <td>2023-06-14 12:30:45</td>
+                                    <td>192.168.1.106</td>
+                                    <td>Chrome / macOS</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline" onclick="viewLogDetail('LOG20230615008')">
+                                            查看详情
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex items-center justify-between mt-6">
+                        <div class="text-sm text-text-secondary">
+                            共 2,345 条记录，当前显示 1-8 条
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:border-primary hover:text-primary disabled:opacity-50 disabled:pointer-events-none" disabled>
+                                <i class="fa fa-angle-left"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white">1</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">2</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">3</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">4</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">5</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:border-primary hover:text-primary">
+                                <i class="fa fa-angle-right"></i>
+                            </button>
+                            <div class="flex items-center ml-4">
+                                <span class="text-sm text-text-secondary mr-2">跳至</span>
+                                <input type="number" class="w-16 h-8 px-2 border border-border-color rounded text-center text-sm" value="1" min="1" max="294">
+                                <span class="text-sm text-text-secondary ml-2">页</span>
+                                <button class="btn btn-outline ml-2 px-3 py-1">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 操作趋势图表 -->
+                <div class="mt-6">
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-medium">操作趋势分析</h3>
+                            <div class="flex items-center space-x-3">
+                                <select class="form-select w-40">
+                                    <option value="7">近7天</option>
+                                    <option value="15">近15天</option>
+                                    <option value="30">近30天</option>
+                                    <option value="90">近90天</option>
+                                </select>
+                                <button class="btn btn-outline">
+                                    <i class="fa fa-download mr-1"></i> 导出数据
+                                </button>
+                            </div>
+                        </div>
+                        <div class="h-80 bg-gray-50 rounded-md flex items-center justify-center">
+                            <!-- 这里应该是图表区域，使用简单的占位符模拟 -->
+                            <div class="text-center text-text-secondary">
+                                <i class="fa fa-area-chart text-4xl mb-2"></i>
+                                <p>操作趋势图表区域</p>
+                                <p class="text-xs mt-1">实际项目中可集成ECharts等图表库</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 日志详情模态框 -->
+    <div id="log-detail-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-modal w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-border-color">
+                <h3 class="text-lg font-medium">操作日志详情</h3>
+                <button class="absolute top-6 right-6 text-text-secondary hover:text-error" onclick="closeLogDetailModal()">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="form-group">
+                        <label class="form-label">操作ID</label>
+                        <div class="bg-gray-50 p-2 rounded text-sm">LOG20230615002</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">操作人</label>
+                        <div class="bg-gray-50 p-2 rounded text-sm">manager01 (李经理)</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">操作类型</label>
+                        <div class="bg-gray-50 p-2 rounded text-sm">
+                            <span class="badge bg-success-light text-success">更新</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">操作模块</label>
+                        <div class="bg-gray-50 p-2 rounded text-sm">售后单管理</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">操作结果</label>
+                        <div class="bg-gray-50 p-2 rounded text-sm">
+                            <span class="log-level-success">
+                                <i class="fa fa-check-circle mr-1"></i> 成功
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">操作时间</label>
+                        <div class="bg-gray-50 p-2 rounded text-sm">2023-06-15 13:45:12</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">IP地址</label>
+                        <div class="bg-gray-50 p-2 rounded text-sm">192.168.1.101</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">设备信息</label>
+                        <div class="bg-gray-50 p-2 rounded text-sm">Firefox / macOS</div>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label class="form-label">操作描述</label>
+                        <div class="bg-gray-50 p-2 rounded text-sm">更新了售后工单 #202306150001 的状态，从「待处理」变更为「处理中」</div>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label class="form-label">操作内容</label>
+                        <div class="operation-detail">
+                            <pre class="whitespace-pre-wrap">{
+  "ticketId": "#202306150001",
+  "oldStatus": "待处理",
+  "newStatus": "处理中",
+  "processTime": "2023-06-15 13:45:12",
+  "operator": "manager01",
+  "remark": "开始处理该售后工单",
+  "systemInfo": {
+    "ip": "192.168.1.101",
+    "browser": "Firefox",
+    "version": "99.0",
+    "os": "macOS",
+    "device": "desktop"
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-border-color flex items-center justify-end">
+                <button class="btn btn-primary" onclick="closeLogDetailModal()">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            const navTexts = document.querySelectorAll('nav span');
+            navTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const navTitles = document.querySelectorAll('nav .text-xs');
+            navTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+        });
+        
+        // 查看日志详情
+        function viewLogDetail(logId) {
+            document.getElementById('log-detail-modal').classList.remove('hidden');
+            // 实际项目中这里可以根据logId加载对应的日志详情数据
+        }
+        
+        function closeLogDetailModal() {
+            document.getElementById('log-detail-modal').classList.add('hidden');
+        }
+        
+        // 导出功能
+        document.querySelector('button:has(i.fa-download)').addEventListener('click', function() {
+            alert('日志数据导出成功');
+        });
+        
+        // 刷新功能
+        document.querySelector('button:has(i.fa-refresh)').addEventListener('click', function() {
+            alert('日志数据刷新成功');
+        });
+        
+        // 模态框点击外部关闭
+        const logDetailModal = document.getElementById('log-detail-modal');
+        if (logDetailModal) {
+            logDetailModal.addEventListener('click', function(event) {
+                if (event.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        }
+        
+        // 搜索功能
+        document.querySelector('button:has(i.fa-search)').addEventListener('click', function() {
+            alert('日志搜索已执行');
+        });
+        
+        // 重置功能
+        document.querySelector('button.btn-outline:first-of-type').addEventListener('click', function() {
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.value = '';
+            });
+            
+            const selects = document.querySelectorAll('.form-select');
+            selects.forEach(select => {
+                select.value = '';
+            });
+            
+            alert('搜索条件已重置');
+        });
+        
+        // 分页跳转到指定页面
+        const pageJumpBtn = document.querySelector('.btn-outline.ml-2');
+        if (pageJumpBtn) {
+            pageJumpBtn.addEventListener('click', function() {
+                const pageInput = document.querySelector('input[type="number"]');
+                if (pageInput) {
+                    const pageNum = parseInt(pageInput.value);
+                    if (pageNum >= 1 && pageNum <= 294) {
+                        alert(`已跳转到第 ${pageNum} 页`);
+                    } else {
+                        alert('请输入有效的页码');
+                        pageInput.value = 1;
+                    }
+                }
+            });
+        }
+        
+        // 页码输入框回车跳转
+        const pageInput = document.querySelector('input[type="number"]');
+        if (pageInput) {
+            pageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const pageNum = parseInt(this.value);
+                    if (pageNum >= 1 && pageNum <= 294) {
+                        alert(`已跳转到第 ${pageNum} 页`);
+                    } else {
+                        alert('请输入有效的页码');
+                        this.value = 1;
+                    }
+                }
+            });
+        }
+        
+        // 图表数据导出
+        const chartExportBtn = document.querySelector('.btn-outline:has(i.fa-download)');
+        if (chartExportBtn) {
+            chartExportBtn.addEventListener('click', function() {
+                alert('图表数据导出成功');
+            });
+        }
+        
+        // 日期范围选择限制
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        dateInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const startDateInput = dateInputs[0];
+                const endDateInput = dateInputs[1];
+                
+                if (startDateInput.value && endDateInput.value) {
+                    const startDate = new Date(startDateInput.value);
+                    const endDate = new Date(endDateInput.value);
+                    
+                    if (startDate > endDate) {
+                        alert('开始日期不能晚于结束日期');
+                        this.value = '';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

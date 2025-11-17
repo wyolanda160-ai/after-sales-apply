@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>退款完成 - 平台总后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#ff4d4f',
+                        info: '#8c8c8c',
+                        'primary-light': '#e6f7ff',
+                        'success-light': '#f6ffed',
+                        'warning-light': '#fff7e6',
+                        'error-light': '#fff1f0',
+                        'border-color': '#e8e8e8',
+                        'text-secondary': '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+                        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .hover-scale-105 {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale-105:hover {
+                transform: scale(1.05);
+            }
+            .active-nav-item {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .badge {
+                @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-success {
+                @apply bg-success text-white hover:bg-success/90;
+            }
+            .btn-warning {
+                @apply bg-warning text-white hover:bg-warning/90;
+            }
+            .btn-error {
+                @apply bg-error text-white hover:bg-error/90;
+            }
+            .btn-outline {
+                @apply border border-border-color text-text-secondary hover:bg-gray-50;
+            }
+            .form-input {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-select {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white;
+            }
+            .form-date {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-textarea {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary min-h-[100px] resize-y;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-card p-6;
+            }
+            .timeline-item {
+                @apply relative pl-8 pb-6;
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: 2px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                @apply bg-border-color;
+            }
+            .timeline-item::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 6px;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                @apply bg-primary;
+            }
+            .timeline-item:last-child::before {
+                display: none;
+            }
+            .timeline-item.completed::after {
+                @apply bg-success;
+            }
+            .timeline-item.processing::after {
+                @apply bg-primary;
+            }
+            .timeline-item.pending::after {
+                @apply bg-warning;
+            }
+            .timeline-item.rejected::after {
+                @apply bg-error;
+            }
+            .success-highlight {
+                @apply border-l-4 border-success bg-success-light p-4 rounded-r-md;
+            }
+            .refund-summary {
+                @apply bg-success-light border border-success/30 rounded-lg p-6 text-center;
+            }
+            .refund-detail-card {
+                @apply bg-white rounded-lg shadow-sm border border-border-color p-6;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md flex flex-col overflow-y-auto">
+            <!-- 品牌标志 -->
+            <div class="h-16 flex items-center justify-center border-b border-border-color">
+                <h1 class="text-xl font-bold text-primary">平台总后台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 py-4">
+                <div class="px-4 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    系统概览
+                </div>
+                <a href="admin-dashboard.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-tachometer w-5 mr-3 text-center"></i>
+                    <span>数据看板</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    售后管理
+                </div>
+                <a href="admin-after-sales-list.html" class="flex items-center px-4 py-3 active-nav-item transition-all-300">
+                    <i class="fa fa-list-alt w-5 mr-3 text-center"></i>
+                    <span>售后单管理</span>
+                    <span class="ml-auto bg-error text-white text-xs px-2 py-1 rounded-full">10</span>
+                </a>
+                <a href="admin-financial-review.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-calculator w-5 mr-3 text-center"></i>
+                    <span>财务复核管理</span>
+                    <span class="ml-auto bg-warning text-white text-xs px-2 py-1 rounded-full">2</span>
+                </a>
+                <a href="admin-cod-refund.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-money w-5 mr-3 text-center"></i>
+                    <span>COD退款管理</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    配置管理
+                </div>
+                <a href="admin-after-sales-config.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-cog w-5 mr-3 text-center"></i>
+                    <span>售后配置管理</span>
+                </a>
+                <a href="admin-after-sales-analysis.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-bar-chart w-5 mr-3 text-center"></i>
+                    <span>售后统计分析</span>
+                </a>
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-border-color">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full" src="https://picsum.photos/id/1005/200/200" alt="管理员头像">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">张管理员</p>
+                        <p class="text-xs text-text-secondary">超级管理员</p>
+                    </div>
+                    <button class="ml-auto text-text-secondary hover:text-error">
+                        <i class="fa fa-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-text-secondary hover:text-primary mr-4">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <a href="admin-dashboard.html" class="text-text-secondary hover:text-primary text-sm mr-2">首页</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <a href="admin-after-sales-list.html" class="text-text-secondary hover:text-primary text-sm mr-2">售后单管理</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <span class="text-sm font-medium">退款完成</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-md text-sm border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-text-secondary hover:text-primary">
+                            <i class="fa fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-error text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">2</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="main-content">
+                <!-- 退款成功提示 -->
+                <div class="success-highlight mb-6">
+                    <div class="flex items-start">
+                        <i class="fa fa-check-circle text-success mt-1 mr-3"></i>
+                        <div>
+                            <h4 class="font-medium text-success">退款处理完成</h4>
+                            <p class="text-sm text-success/80 mt-1">该售后单已成功完成退款处理，资金已退回用户账户。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 退款成功摘要 -->
+                <div class="refund-summary mb-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success text-white mb-4">
+                        <i class="fa fa-check text-2xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">退款成功</h2>
+                    <p class="text-sm text-text-secondary mb-4">¥299.00 已成功退回至用户账户</p>
+                    <div class="bg-white/50 rounded-full px-6 py-3 inline-block">
+                        <span class="text-sm">退款批次号：REF202306110001</span>
+                    </div>
+                </div>
+                
+                <!-- 售后单基本信息 -->
+                <div class="card mb-6">
+                    <div class="flex flex-wrap items-center justify-between mb-4">
+                        <div class="flex items-center mb-4 sm:mb-0">
+                            <h3 class="text-lg font-medium mr-3">售后单号：AS202306110001</h3>
+                            <span class="badge bg-success-light text-success">已完成</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="btn btn-outline" id="view-records-btn">
+                                <i class="fa fa-history mr-1"></i> 查看操作记录
+                            </button>
+                            <button class="btn btn-outline" id="print-btn">
+                                <i class="fa fa-print mr-1"></i> 打印
+                            </button>
+                            <button class="btn btn-outline" id="export-btn">
+                                <i class="fa fa-download mr-1"></i> 导出
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-sm font-medium text-text-secondary mb-3">基本信息</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-text-secondary">售后类型</p>
+                                    <p class="text-sm mt-1">仅退款</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">申请金额</p>
+                                    <p class="text-sm font-medium mt-1">¥299.00</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">申请时间</p>
+                                    <p class="text-sm mt-1">2023-06-11 10:23:45</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">处理人</p>
+                                    <p class="text-sm mt-1">张管理员</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">完成时间</p>
+                                    <p class="text-sm mt-1">2023-06-11 18:30:45</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">是否平台介入</p>
+                                    <p class="text-sm text-error mt-1">是</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-text-secondary mb-3">订单信息</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-text-secondary">订单编号</p>
+                                    <p class="text-sm mt-1">SO202306100001</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">支付方式</p>
+                                    <p class="text-sm mt-1">在线支付</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">下单时间</p>
+                                    <p class="text-sm mt-1">2023-06-10 15:30:11</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">支付时间</p>
+                                    <p class="text-sm mt-1">2023-06-10 15:31:22</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 退款详情和结果 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- 退款信息 -->
+                    <div class="refund-detail-card">
+                        <h3 class="font-medium mb-4 flex items-center">
+                            <i class="fa fa-money text-success mr-2"></i>
+                            退款信息
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-xs text-text-secondary">退款金额</span>
+                                    <span class="text-lg font-bold text-success">¥299.00</span>
+                                </div>
+                                <div class="h-1 w-full bg-gray-200 rounded">
+                                    <div class="h-1 bg-success rounded" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pt-3 border-t border-border-color">
+                                <p class="text-xs text-text-secondary">退款状态</p>
+                                <p class="text-sm font-medium text-success mt-1">退款成功</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">退款方式</p>
+                                <p class="text-sm mt-1">原路退回 - 支付宝</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">退款账户</p>
+                                <p class="text-sm mt-1">138****6789 (支付宝)</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">退款时间</p>
+                                <p class="text-sm mt-1">2023-06-11 18:30:45</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">预计到账时间</p>
+                                <p class="text-sm mt-1">2023-06-12 18:30:45前</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">交易流水号</p>
+                                <p class="text-sm mt-1 truncate">202306111830451234567890</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 仲裁结果 -->
+                    <div class="refund-detail-card">
+                        <h3 class="font-medium mb-4 flex items-center">
+                            <i class="fa fa-gavel text-primary mr-2"></i>
+                            仲裁结果
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-xs text-text-secondary">仲裁决定</p>
+                                <p class="text-sm font-medium text-primary mt-1">同意退款</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">责任判定</p>
+                                <p class="text-sm mt-1">商户全责</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">仲裁员</p>
+                                <p class="text-sm mt-1">张管理员</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">仲裁时间</p>
+                                <p class="text-sm mt-1">2023-06-11 16:30:10</p>
+                            </div>
+                            <div class="pt-3 border-t border-border-color">
+                                <p class="text-xs text-text-secondary">仲裁备注</p>
+                                <p class="text-sm mt-1">根据用户提供的凭证和商户回复，平台确认商品确实存在质量问题，商户也已同意退款。按照平台规则，判定商户全责，同意全额退款。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 财务信息 -->
+                    <div class="refund-detail-card">
+                        <h3 class="font-medium mb-4 flex items-center">
+                            <i class="fa fa-calculator text-info mr-2"></i>
+                            财务信息
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-xs text-text-secondary">财务处理人</p>
+                                <p class="text-sm mt-1">王财务</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">财务复核时间</p>
+                                <p class="text-sm mt-1">2023-06-11 17:45:33</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">退款批次号</p>
+                                <p class="text-sm font-medium mt-1">REF202306110001</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">资金来源</p>
+                                <p class="text-sm mt-1">商户账户 - 优品百货旗舰店</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">商户扣款金额</p>
+                                <p class="text-sm mt-1">¥299.00</p>
+                            </div>
+                            <div class="pt-3 border-t border-border-color">
+                                <p class="text-xs text-text-secondary">财务备注</p>
+                                <p class="text-sm mt-1">商户账户余额充足，已成功扣款并发起退款流程。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 处理流程 -->
+                <div class="card mb-6">
+                    <h3 class="font-medium mb-4">完整处理流程</h3>
+                    <div class="timeline">
+                        <div class="timeline-item completed">
+                            <div class="text-sm font-medium">用户申请售后</div>
+                            <div class="text-xs text-text-secondary mt-1">2023-06-11 10:23:45</div>
+                            <div class="text-sm mt-2">用户提交了仅退款申请，原因：商品质量问题</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="text-sm font-medium">平台初审通过</div>
+                            <div class="text-xs text-text-secondary mt-1">2023-06-11 11:05:22</div>
+                            <div class="text-sm mt-2">平台工作人员审核通过，等待商户处理</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="text-sm font-medium">商户同意退款</div>
+                            <div class="text-xs text-text-secondary mt-1">2023-06-11 14:30:15</div>
+                            <div class="text-sm mt-2">商户确认商品问题，同意退款处理</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="text-sm font-medium">平台介入处理</div>
+                            <div class="text-xs text-text-secondary mt-1">2023-06-11 15:00:00</div>
+                            <div class="text-sm mt-2">平台介入处理此售后工单</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="text-sm font-medium">仲裁结果确认</div>
+                            <div class="text-xs text-text-secondary mt-1">2023-06-11 16:30:10</div>
+                            <div class="text-sm mt-2">平台仲裁结果：同意退款，责任判定：商户全责</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="text-sm font-medium">财务复核通过</div>
+                            <div class="text-xs text-text-secondary mt-1">2023-06-11 17:45:33</div>
+                            <div class="text-sm mt-2">财务部门已审核通过，准备发起退款</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="text-sm font-medium">退款完成</div>
+                            <div class="text-xs text-text-secondary mt-1">2023-06-11 18:30:45</div>
+                            <div class="text-sm mt-2">退款已成功发起，资金将在1-3个工作日内到账</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 处理建议和后续操作 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 处理建议 -->
+                    <div class="card">
+                        <h3 class="font-medium mb-4">处理建议</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-success mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm font-medium">通知用户退款成功</p>
+                                    <p class="text-xs text-text-secondary mt-1">已自动发送退款成功通知给用户</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-success mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm font-medium">通知商户处理结果</p>
+                                    <p class="text-xs text-text-secondary mt-1">已自动发送处理结果通知给商户</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-info-circle text-primary mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm font-medium">关注用户满意度</p>
+                                    <p class="text-xs text-text-secondary mt-1">建议在3个工作日内进行用户回访</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-info-circle text-primary mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm font-medium">评估商户服务质量</p>
+                                    <p class="text-xs text-text-secondary mt-1">该商户近期退款率略高，建议关注</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 后续操作 -->
+                    <div class="card">
+                        <h3 class="font-medium mb-4">后续操作</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="btn btn-outline flex flex-col items-center justify-center py-3 h-20">
+                                <i class="fa fa-comment-o text-primary text-xl mb-2"></i>
+                                <span>联系用户</span>
+                            </button>
+                            <button class="btn btn-outline flex flex-col items-center justify-center py-3 h-20">
+                                <i class="fa fa-building-o text-primary text-xl mb-2"></i>
+                                <span>联系商户</span>
+                            </button>
+                            <button class="btn btn-outline flex flex-col items-center justify-center py-3 h-20">
+                                <i class="fa fa-file-text-o text-primary text-xl mb-2"></i>
+                                <span>生成报告</span>
+                            </button>
+                            <button class="btn btn-outline flex flex-col items-center justify-center py-3 h-20">
+                                <i class="fa fa-share-alt text-primary text-xl mb-2"></i>
+                                <span>分享案例</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 返回列表按钮 -->
+                <div class="mt-8 text-center">
+                    <a href="admin-after-sales-list.html" class="btn btn-primary inline-flex items-center justify-center px-6">
+                        <i class="fa fa-arrow-left mr-2"></i>
+                        返回售后单列表
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            const navTexts = document.querySelectorAll('nav span');
+            navTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const navTitles = document.querySelectorAll('nav .text-xs');
+            navTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+        });
+        
+        // 查看操作记录按钮
+        document.getElementById('view-records-btn').addEventListener('click', function() {
+            // 这里可以实现查看完整操作记录的功能
+            alert('查看完整操作记录功能待实现');
+        });
+        
+        // 打印按钮
+        document.getElementById('print-btn').addEventListener('click', function() {
+            // 实现打印功能
+            window.print();
+        });
+        
+        // 导出按钮
+        document.getElementById('export-btn').addEventListener('click', function() {
+            // 这里可以实现导出功能
+            alert('导出售后单详情功能待实现');
+        });
+        
+        // 后续操作按钮点击事件
+        const actionButtons = document.querySelectorAll('.btn-outline.flex-col');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const actionText = this.querySelector('span').textContent;
+                alert(`${actionText}功能待实现`);
+            });
+        });
+    </script>
+</body>
+</html>

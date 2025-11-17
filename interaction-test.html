@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后系统交互测试</title>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#f5222d',
+                        info: '#1890ff',
+                        'text-primary': '#333333',
+                        'text-secondary': '#666666',
+                        'text-disabled': '#999999',
+                        'border-base': '#d9d9d9',
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    },
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 rounded text-sm font-medium transition-colors duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-outline {
+                @apply border border-primary text-primary hover:bg-primary/5;
+            }
+            .btn-secondary {
+                @apply bg-gray-100 text-text-secondary hover:bg-gray-200;
+            }
+            .card-shadow {
+                @apply shadow-card;
+            }
+            .modal-overlay {
+                @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+            }
+            .modal-content {
+                @apply bg-white rounded-lg w-full max-w-lg max-h-[90vh] overflow-auto;
+            }
+            .modal-header {
+                @apply flex items-center justify-between p-4 border-b border-border-base;
+            }
+            .modal-body {
+                @apply p-4;
+            }
+            .modal-footer {
+                @apply flex items-center justify-end p-4 border-t border-border-base space-x-2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-6">售后系统交互测试</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-bold mb-4">快速验证</h2>
+            <p class="text-text-secondary mb-4">点击下方按钮直接验证交互功能</p>
+            
+            <div class="space-y-4">
+                <button id="verify-detail-modal-btn" class="btn btn-primary w-full">
+                    <i class="fa fa-eye mr-2"></i> 验证详情模态框
+                </button>
+                
+                <button id="verify-audit-modal-btn" class="btn btn-outline w-full">
+                    <i class="fa fa-cog mr-2"></i> 验证审核模态框
+                </button>
+                
+                <button id="reset-test-btn" class="btn btn-secondary w-full">
+                    <i class="fa fa-refresh mr-2"></i> 重置测试
+                </button>
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">测试结果</h2>
+            <div id="test-result" class="min-h-[100px] p-4 bg-gray-50 rounded border border-dashed border-border-base">
+                <p class="text-text-secondary">等待测试结果...</p>
+            </div>
+            
+            <h3 class="text-lg font-medium mt-6 mb-2">操作说明：</h3>
+            <ul class="list-disc pl-5 text-text-secondary space-y-2">
+                <li>点击"验证详情模态框"按钮打开详情模态框</li>
+                <li>测试模态框关闭功能：点击关闭按钮、点击模态框外部、按ESC键</li>
+                <li>测试模态框内容区域点击：确保点击内容区域不会关闭模态框</li>
+                <li>重复上述步骤验证审核模态框</li>
+                <li>查看控制台日志了解详细交互过程</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- 详情模态框 -->
+    <div id="detail-modal" class="hidden modal-overlay">
+        <div class="modal-content" id="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title" class="text-lg font-medium">售后详情</h2>
+                <button id="close-modal" class="text-text-secondary hover:text-text-primary">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <p><strong>售后单号：</strong><span id="modal-after-sale-id">AS20240101001</span></p>
+                    <p><strong>当前状态：</strong><span id="modal-status">待审核</span></p>
+                    <p><strong>售后类型：</strong><span id="modal-after-sale-type">退款</span></p>
+                </div>
+                
+                <div class="mt-6">
+                    <button class="btn btn-primary mr-2">同意</button>
+                    <button class="btn btn-outline mr-2">拒绝</button>
+                    <button class="btn btn-secondary">协商</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 审核模态框 -->
+    <div id="audit-modal" class="hidden modal-overlay">
+        <div class="modal-content" id="audit-modal-content">
+            <div class="modal-header">
+                <h2 id="audit-modal-title" class="text-lg font-medium">审核</h2>
+                <button id="close-audit-modal" class="text-text-secondary hover:text-text-primary">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="agree-section">
+                    <p class="mb-4">确定要同意此售后申请吗？</p>
+                    <div class="mt-4">
+                        <label class="block mb-2">处理结果</label>
+                        <select class="w-full p-2 border border-border-base rounded">
+                            <option>待用户退货</option>
+                            <option>待退款</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="audit-cancel-btn" class="btn btn-secondary">取消</button>
+                <button id="audit-confirm-btn" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 测试函数
+        function logTestResult(message, isSuccess = true) {
+            const resultElem = document.getElementById('test-result');
+            const now = new Date();
+            const timestamp = now.toLocaleTimeString();
+            const logClass = isSuccess ? 'text-success' : 'text-error';
+            const icon = isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            const logItem = document.createElement('div');
+            logItem.className = `flex items-start mb-2 ${logClass}`;
+            logItem.innerHTML = `
+                <i class="fa ${icon} mr-2 mt-1"></i>
+                <div>
+                    <span class="text-xs text-text-disabled">[${timestamp}]</span>
+                    <span class="ml-2">${message}</span>
+                </div>
+            `;
+            
+            resultElem.appendChild(logItem);
+            resultElem.scrollTop = resultElem.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        // 重置测试结果
+        function resetTestResult() {
+            const resultElem = document.getElementById('test-result');
+            resultElem.innerHTML = '<p class="text-text-secondary">等待测试结果...</p>';
+            console.clear();
+            logTestResult('测试已重置');
+        }
+        
+        // 打开详情模态框
+        function openDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // 禁止页面滚动
+                logTestResult('详情模态框已打开');
+                console.log('详情模态框已打开，背景点击应该能关闭，内容点击不应关闭');
+            }
+        }
+        
+        // 关闭详情模态框
+        function closeDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = ''; // 恢复页面滚动
+                logTestResult('详情模态框已关闭');
+                console.log('详情模态框已关闭');
+            }
+        }
+        
+        // 打开审核模态框
+        function openAuditModal() {
+            const modal = document.getElementById('audit-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // 禁止页面滚动
+                logTestResult('审核模态框已打开');
+                console.log('审核模态框已打开，背景点击应该能关闭，内容点击不应关闭');
+            }
+        }
+        
+        // 关闭审核模态框
+        function closeAuditModal() {
+            const modal = document.getElementById('audit-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = ''; // 恢复页面滚动
+                logTestResult('审核模态框已关闭');
+                console.log('审核模态框已关闭');
+            }
+        }
+        
+        // 处理点击模态框外部关闭模态框
+        function handleModalOutsideClick(event) {
+            const detailModal = document.getElementById('detail-modal');
+            const auditModal = document.getElementById('audit-modal');
+            
+            // 处理详情模态框
+            if (detailModal && !detailModal.classList.contains('hidden')) {
+                if (event.target === detailModal) {
+                    logTestResult('点击详情模态框外部，关闭模态框');
+                    closeDetailModal();
+                    event.stopPropagation();
+                }
+            }
+            
+            // 处理审核模态框
+            if (auditModal && !auditModal.classList.contains('hidden')) {
+                if (event.target === auditModal) {
+                    logTestResult('点击审核模态框外部，关闭模态框');
+                    closeAuditModal();
+                    event.stopPropagation();
+                }
+            }
+        }
+        
+        // 处理ESC键关闭模态框
+        function handleEscKeyClose(event) {
+            if (event.key === 'Escape' || event.key === 'Esc') {
+                const detailModal = document.getElementById('detail-modal');
+                const auditModal = document.getElementById('audit-modal');
+                
+                if (detailModal && !detailModal.classList.contains('hidden')) {
+                    logTestResult('按ESC键，关闭详情模态框');
+                    closeDetailModal();
+                } else if (auditModal && !auditModal.classList.contains('hidden')) {
+                    logTestResult('按ESC键，关闭审核模态框');
+                    closeAuditModal();
+                }
+            }
+        }
+        
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 详情模态框内容区域阻止冒泡
+            const detailModalContent = document.getElementById('modal-content');
+            if (detailModalContent) {
+                detailModalContent.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    logTestResult('点击详情模态框内容区域，阻止事件冒泡', false);
+                    console.log('点击详情模态框内容区域，已阻止事件冒泡');
+                });
+            }
+            
+            // 审核模态框内容区域阻止冒泡
+            const auditModalContent = document.getElementById('audit-modal-content');
+            if (auditModalContent) {
+                auditModalContent.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    logTestResult('点击审核模态框内容区域，阻止事件冒泡', false);
+                    console.log('点击审核模态框内容区域，已阻止事件冒泡');
+                });
+            }
+            
+            // 关闭按钮事件
+            const closeModalBtn = document.getElementById('close-modal');
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    logTestResult('点击详情模态框关闭按钮');
+                    closeDetailModal();
+                });
+            }
+            
+            const closeAuditModalBtn = document.getElementById('close-audit-modal');
+            if (closeAuditModalBtn) {
+                closeAuditModalBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    logTestResult('点击审核模态框关闭按钮');
+                    closeAuditModal();
+                });
+            }
+            
+            // 审核模态框按钮事件
+            const auditCancelBtn = document.getElementById('audit-cancel-btn');
+            if (auditCancelBtn) {
+                auditCancelBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    logTestResult('点击审核模态框取消按钮');
+                    closeAuditModal();
+                });
+            }
+            
+            const auditConfirmBtn = document.getElementById('audit-confirm-btn');
+            if (auditConfirmBtn) {
+                auditConfirmBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    logTestResult('点击审核模态框确认按钮');
+                    closeAuditModal();
+                });
+            }
+            
+            // 测试按钮事件
+            const verifyDetailModalBtn = document.getElementById('verify-detail-modal-btn');
+            if (verifyDetailModalBtn) {
+                verifyDetailModalBtn.addEventListener('click', function() {
+                    openDetailModal();
+                });
+            }
+            
+            const verifyAuditModalBtn = document.getElementById('verify-audit-modal-btn');
+            if (verifyAuditModalBtn) {
+                verifyAuditModalBtn.addEventListener('click', function() {
+                    openAuditModal();
+                });
+            }
+            
+            const resetTestBtn = document.getElementById('reset-test-btn');
+            if (resetTestBtn) {
+                resetTestBtn.addEventListener('click', function() {
+                    closeDetailModal();
+                    closeAuditModal();
+                    resetTestResult();
+                });
+            }
+            
+            // 全局事件监听器
+            document.addEventListener('click', handleModalOutsideClick);
+            document.addEventListener('keydown', handleEscKeyClose);
+            
+            logTestResult('事件监听器初始化完成');
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initEventListeners();
+            logTestResult('测试页面加载完成，点击上方按钮开始测试');
+        });
+    </script>
+</body>
+</html>

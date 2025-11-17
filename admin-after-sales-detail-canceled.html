@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后详情 - 已撤销 - 平台总后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#ff4d4f',
+                        info: '#8c8c8c',
+                        'primary-light': '#e6f7ff',
+                        'success-light': '#f6ffed',
+                        'warning-light': '#fff7e6',
+                        'error-light': '#fff1f0',
+                        'border-color': '#e8e8e8',
+                        'text-secondary': '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+                        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .hover-scale-105 {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale-105:hover {
+                transform: scale(1.05);
+            }
+            .active-nav-item {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .badge {
+                @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-success {
+                @apply bg-success text-white hover:bg-success/90;
+            }
+            .btn-warning {
+                @apply bg-warning text-white hover:bg-warning/90;
+            }
+            .btn-error {
+                @apply bg-error text-white hover:bg-error/90;
+            }
+            .btn-outline {
+                @apply border border-border-color text-text-secondary hover:bg-gray-50;
+            }
+            .form-input {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-select {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white;
+            }
+            .form-date {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-textarea {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary min-h-[100px] resize-y;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-card p-6;
+            }
+            .timeline-item {
+                @apply relative pl-8 pb-6;
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: 2px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                @apply bg-border-color;
+            }
+            .timeline-item::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 6px;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                @apply bg-primary;
+            }
+            .timeline-item:last-child::before {
+                display: none;
+            }
+            .timeline-item.completed::after {
+                @apply bg-success;
+            }
+            .timeline-item.processing::after {
+                @apply bg-primary;
+            }
+            .timeline-item.pending::after {
+                @apply bg-warning;
+            }
+            .timeline-item.rejected::after {
+                @apply bg-error;
+            }
+            .timeline-item.canceled::after {
+                @apply bg-info;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md flex flex-col overflow-y-auto">
+            <!-- 品牌标志 -->
+            <div class="h-16 flex items-center justify-center border-b border-border-color">
+                <h1 class="text-xl font-bold text-primary">平台总后台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 py-4">
+                <div class="px-4 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    系统概览
+                </div>
+                <a href="admin-dashboard.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-tachometer w-5 mr-3 text-center"></i>
+                    <span>数据看板</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    售后管理
+                </div>
+                <a href="admin-after-sales-list.html" class="flex items-center px-4 py-3 active-nav-item transition-all-300">
+                    <i class="fa fa-list-alt w-5 mr-3 text-center"></i>
+                    <span>售后单管理</span>
+                    <span class="ml-auto bg-error text-white text-xs px-2 py-1 rounded-full">12</span>
+                </a>
+                <a href="admin-cod-refund.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-money w-5 mr-3 text-center"></i>
+                    <span>COD退款管理</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    配置管理
+                </div>
+                <a href="admin-after-sales-config.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-cog w-5 mr-3 text-center"></i>
+                    <span>售后配置管理</span>
+                </a>
+                <a href="admin-after-sales-analysis.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-bar-chart w-5 mr-3 text-center"></i>
+                    <span>售后统计分析</span>
+                </a>
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-border-color">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full" src="https://picsum.photos/id/1005/200/200" alt="管理员头像">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">张管理员</p>
+                        <p class="text-xs text-text-secondary">超级管理员</p>
+                    </div>
+                    <button class="ml-auto text-text-secondary hover:text-error">
+                        <i class="fa fa-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-text-secondary hover:text-primary mr-4">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <a href="admin-dashboard.html" class="text-text-secondary hover:text-primary text-sm mr-2">首页</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <a href="admin-after-sales-list.html" class="text-text-secondary hover:text-primary text-sm mr-2">售后单管理</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <span class="text-sm font-medium">售后单详情</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-md text-sm border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-text-secondary hover:text-primary">
+                            <i class="fa fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-error text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">5</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="main-content">
+                <!-- 售后单基本信息 -->
+                <div class="card mb-6">
+                    <div class="flex flex-wrap items-center justify-between mb-4">
+                        <div class="flex items-center mb-4 sm:mb-0">
+                            <h3 class="text-lg font-medium mr-3">售后单号：AS202305280008</h3>
+                            <span class="badge bg-info-light text-info">已撤销</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="btn btn-outline">
+                                <i class="fa fa-print mr-1"></i> 打印
+                            </button>
+                            <div class="relative">
+                                <button id="more-operation-btn" class="btn btn-outline">
+                                    更多 <i class="fa fa-caret-down ml-1"></i>
+                                </button>
+                                <div id="more-operation-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                                    <a href="#" class="block px-4 py-2 text-sm text-text-secondary hover:bg-gray-100">记录备注</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-text-secondary hover:bg-gray-100">导出详情</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-sm font-medium text-text-secondary mb-3">基本信息</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-text-secondary">售后类型</p>
+                                    <p class="text-sm mt-1">仅退款</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">申请金额</p>
+                                    <p class="text-sm font-medium mt-1">¥299.00</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">申请时间</p>
+                                    <p class="text-sm mt-1">2023-05-28 14:30:22</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">撤销时间</p>
+                                    <p class="text-sm mt-1">2023-05-28 16:45:10</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">撤销人</p>
+                                    <p class="text-sm mt-1">用户本人</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">撤销原因</p>
+                                    <p class="text-sm mt-1">自行处理问题</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-text-secondary mb-3">订单信息</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-text-secondary">订单编号</p>
+                                    <p class="text-sm mt-1">SO202305260045</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">支付方式</p>
+                                    <p class="text-sm mt-1">在线支付</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">下单时间</p>
+                                    <p class="text-sm mt-1">2023-05-26 10:25:45</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary">支付时间</p>
+                                    <p class="text-sm mt-1">2023-05-26 10:26:30</p>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <h4 class="text-sm font-medium text-text-secondary mb-3">撤销详情</h4>
+                                <div class="bg-info-light p-3 rounded-md">
+                                    <p class="text-sm text-info">用户自行解决了商品问题，不需要继续售后流程，主动申请撤销售后。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商品信息 -->
+                <div class="card mb-6">
+                    <h3 class="font-medium mb-4">商品信息</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-border-color">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        商品图片
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        商品名称
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        SKU信息
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        单价
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        数量
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        小计
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-border-color">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <img src="https://picsum.photos/id/96/80/80" alt="商品图片" class="w-16 h-16 object-cover rounded">
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-medium text-gray-900">蓝牙音箱</div>
+                                        <div class="text-xs text-text-secondary mt-1">商品编码：B2023015</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">黑色 / 标准版</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">¥299.00</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">1</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">¥299.00</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 用户和商户信息 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="card">
+                        <h3 class="font-medium mb-4">用户信息</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-xs text-text-secondary">用户昵称</p>
+                                <p class="text-sm mt-1">李先生</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">用户ID</p>
+                                <p class="text-sm mt-1">U1000234</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">手机号码</p>
+                                <p class="text-sm mt-1">139****7890</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">申请原因</p>
+                                <p class="text-sm mt-1">商品功能异常</p>
+                            </div>
+                            <div class="col-span-2">
+                                <p class="text-xs text-text-secondary">问题描述</p>
+                                <p class="text-sm mt-1">蓝牙音箱连接不稳定，声音断断续续，偶尔会自动断开连接。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <p class="text-xs text-text-secondary mb-2">凭证图片</p>
+                            <div class="grid grid-cols-4 gap-3">
+                                <img src="https://picsum.photos/id/119/120/120" alt="凭证图片1" class="w-full aspect-square object-cover rounded cursor-pointer" id="credential-img-1">
+                                <img src="https://picsum.photos/id/118/120/120" alt="凭证图片2" class="w-full aspect-square object-cover rounded cursor-pointer" id="credential-img-2">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="font-medium mb-4">商户信息</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-xs text-text-secondary">商户名称</p>
+                                <p class="text-sm font-medium mt-1">音频设备旗舰店</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">商户ID</p>
+                                <p class="text-sm mt-1">M2000567</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">联系人</p>
+                                <p class="text-sm mt-1">赵经理</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">联系电话</p>
+                                <p class="text-sm mt-1">137****3456</p>
+                            </div>
+                            <div class="col-span-2">
+                                <p class="text-xs text-text-secondary">商户回复</p>
+                                <p class="text-sm text-text-secondary mt-1">已收到用户售后申请，正在核实商品情况。建议用户检查蓝牙设备距离、更新手机蓝牙驱动或重置音箱。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 处理流程和平台处理记录 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- 处理流程 -->
+                    <div class="card">
+                        <h3 class="font-medium mb-4">处理流程</h3>
+                        <div class="timeline">
+                            <div class="timeline-item completed">
+                                <div class="text-sm font-medium">用户申请售后</div>
+                                <div class="text-xs text-text-secondary mt-1">2023-05-28 14:30:22</div>
+                                <div class="text-sm mt-2">用户提交了仅退款申请，原因：商品功能异常</div>
+                            </div>
+                            <div class="timeline-item completed">
+                                <div class="text-sm font-medium">商户响应</div>
+                                <div class="text-xs text-text-secondary mt-1">2023-05-28 15:45:33</div>
+                                <div class="text-sm mt-2">商户已响应并提供了解决方案</div>
+                            </div>
+                            <div class="timeline-item canceled">
+                                <div class="text-sm font-medium">用户撤销申请</div>
+                                <div class="text-xs text-text-secondary mt-1">2023-05-28 16:45:10</div>
+                                <div class="text-sm text-info mt-2">用户自行解决了问题，主动撤销售后申请</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 平台处理记录 -->
+                    <div class="card">
+                        <h3 class="font-medium mb-4">平台处理记录</h3>
+                        <div class="space-y-4">
+                            <div class="bg-gray-50 p-3 rounded">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-success-light flex items-center justify-center">
+                                        <i class="fa fa-check text-success"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium">系统自动</div>
+                                        <div class="text-xs text-text-secondary">2023-05-28 16:45:10</div>
+                                    </div>
+                                </div>
+                                <div class="ml-11 mt-2 text-sm text-info">
+                                    售后申请已撤销，原因：自行处理问题。售后单状态更新为"已撤销"。
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center">
+                                        <i class="fa fa-user text-primary"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium">赵售后</div>
+                                        <div class="text-xs text-text-secondary">2023-05-28 15:50:22</div>
+                                    </div>
+                                </div>
+                                <div class="ml-11 mt-2 text-sm">
+                                    已收到商户响应，将商户建议转交给用户，并告知用户可以尝试按照建议操作。
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center">
+                                        <i class="fa fa-user text-primary"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium">赵售后</div>
+                                        <div class="text-xs text-text-secondary">2023-05-28 14:40:15</div>
+                                    </div>
+                                </div>
+                                <div class="ml-11 mt-2 text-sm">
+                                    收到售后申请，已通知商户处理，并建议用户保持电话畅通以便沟通。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 撤销信息说明 -->
+                <div class="card">
+                    <h3 class="font-medium mb-4">撤销信息说明</h3>
+                    <div class="bg-info-light p-4 rounded-md mb-6">
+                        <div class="flex items-start">
+                            <i class="fa fa-info-circle text-info mt-1 mr-3"></i>
+                            <div>
+                                <p class="text-sm font-medium text-info">售后申请已撤销</p>
+                                <p class="text-sm text-text-secondary mt-1">撤销原因：自行处理问题</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-sm font-medium text-text-secondary mb-3">撤销详情</h4>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-md">
+                                    <p class="text-sm mb-2"><span class="font-medium">撤销时间：</span>2023-05-28 16:45:10</p>
+                                    <p class="text-sm mb-2"><span class="font-medium">撤销方式：</span>用户自主撤销</p>
+                                    <p class="text-sm"><span class="font-medium">撤销说明：</span>用户按照商户建议，重置了蓝牙音箱并更新了手机蓝牙驱动，问题已解决，不再需要退款。</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-sm font-medium mb-2">撤销审核记录：</p>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <p class="text-sm text-success"><i class="fa fa-check-circle mr-1"></i> 系统自动审核通过</p>
+                                        <p class="text-xs text-text-secondary mt-1">2023-05-28 16:45:10</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-sm font-medium text-text-secondary mb-3">后续处理</h4>
+                            <div class="bg-gray-50 p-4 rounded-md mb-4">
+                                <h5 class="text-sm font-medium mb-2">撤销后的状态</h5>
+                                <ul class="space-y-2 text-sm text-text-secondary">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-circle-o text-xs mt-1 mr-2"></i>
+                                        <span>售后单已标记为"已撤销"</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-circle-o text-xs mt-1 mr-2"></i>
+                                        <span>订单状态已恢复为"已完成"</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-circle-o text-xs mt-1 mr-2"></i>
+                                        <span>未发生资金变动</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <h4 class="text-sm font-medium text-text-secondary mb-3">平台提示</h4>
+                            <div class="text-sm text-text-secondary space-y-2">
+                                <p>1. 撤销的售后单不会影响用户后续正常申请售后的权限。</p>
+                                <p>2. 如用户后续再次遇到同样问题，可以在售后期限内重新提交申请。</p>
+                                <p>3. 商户将收到撤销通知，无需继续处理该售后。</p>
+                                <p>4. 建议用户保存好商品凭证，以便后续可能需要的售后申请。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            const navTexts = document.querySelectorAll('nav span');
+            navTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const navTitles = document.querySelectorAll('nav .text-xs');
+            navTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+        });
+        
+        // 更多操作下拉菜单
+        const moreOperationBtn = document.getElementById('more-operation-btn');
+        const moreOperationDropdown = document.getElementById('more-operation-dropdown');
+        
+        if (moreOperationBtn && moreOperationDropdown) {
+            moreOperationBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                moreOperationDropdown.classList.toggle('hidden');
+            });
+            
+            // 点击其他地方关闭下拉菜单
+            document.addEventListener('click', function() {
+                moreOperationDropdown.classList.add('hidden');
+            });
+        }
+        
+        // 凭证图片预览功能
+        const credentialImages = document.querySelectorAll('.card img.cursor-pointer');
+        credentialImages.forEach(img => {
+            img.addEventListener('click', function() {
+                // 这里可以实现图片预览功能
+                alert('预览图片: ' + this.src);
+            });
+        });
+        
+        // 记录备注功能
+        const noteLink = document.querySelector('a[href="#"].text-text-secondary:first-child');
+        if (noteLink) {
+            noteLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                const noteText = prompt('请输入备注信息：');
+                if (noteText && noteText.trim() !== '') {
+                    alert('备注信息已添加：' + noteText.trim());
+                }
+            });
+        }
+    </script>
+</body>
+</html>

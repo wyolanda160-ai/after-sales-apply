@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <!-- 定义样式 -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+    </marker>
+    <style>
+      /* 角色区域样式 */
+      .consumer { fill: #e6f7ff; stroke: #1890ff; stroke-width: 2; }
+      .merchant { fill: #f6ffed; stroke: #52c41a; stroke-width: 2; }
+      .platform { fill: #fff2e8; stroke: #fa8c16; stroke-width: 2; }
+      .state { fill: #f9f9f9; stroke: #d9d9d9; stroke-width: 1; }
+      
+      /* 文本样式 */
+      .text { font-family: Arial, sans-serif; font-size: 16px; fill: #333; }
+      .title { font-family: Arial, sans-serif; font-size: 22px; font-weight: bold; fill: #333; }
+      .role-title { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; }
+      .step-number { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #666; }
+      .note-text { font-family: Arial, sans-serif; font-size: 14px; fill: #666; }
+      
+      /* 箭头样式 */
+      .arrow { stroke: #666; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .dashed-arrow { stroke: #666; stroke-width: 2; fill: none; stroke-dasharray: 5,5; marker-end: url(#arrowhead); }
+      
+      /* 区域背景 */
+      .role-area { fill: #fafafa; stroke: #e8e8e8; stroke-width: 1; opacity: 0.8; }
+      .legend-item { stroke-width: 1; }
+    </style>
+  </defs>
+  
+  <!-- 标题 -->
+  <text x="600" y="40" text-anchor="middle" class="title">售后服务三方业务流程图</text>
+  
+  <!-- 角色区域背景 -->
+  <rect x="40" y="60" width="320" height="760" rx="8" ry="8" class="role-area"/>
+  <rect x="400" y="60" width="320" height="760" rx="8" ry="8" class="role-area"/>
+  <rect x="760" y="60" width="320" height="760" rx="8" ry="8" class="role-area"/>
+  
+  <!-- 角色标题 -->
+  <text x="200" y="90" text-anchor="middle" class="role-title" fill="#1890ff">消费者</text>
+  <text x="560" y="90" text-anchor="middle" class="role-title" fill="#52c41a">商户</text>
+  <text x="920" y="90" text-anchor="middle" class="role-title" fill="#fa8c16">平台总后台</text>
+  
+  <!-- 消费者流程 -->
+  <!-- 步骤1 -->
+  <rect x="80" y="120" width="240" height="70" rx="8" ry="8" class="consumer"/>
+  <text x="105" y="155" class="step-number">1.</text>
+  <text x="200" y="155" text-anchor="middle" class="text">发起售后申请</text>
+  
+  <!-- 步骤2 -->
+  <rect x="80" y="220" width="240" height="70" rx="8" ry="8" class="state"/>
+  <text x="105" y="255" class="step-number">2.</text>
+  <text x="200" y="255" text-anchor="middle" class="text">待商户审核</text>
+  
+  <!-- 步骤4 -->
+  <rect x="80" y="350" width="240" height="70" rx="8" ry="8" class="consumer"/>
+  <text x="105" y="385" class="step-number">4.</text>
+  <text x="200" y="385" text-anchor="middle" class="text">寄回商品并填写物流</text>
+  
+  <!-- 步骤6 -->
+  <rect x="80" y="480" width="240" height="70" rx="8" ry="8" class="state"/>
+  <text x="105" y="515" class="step-number">6.</text>
+  <text x="200" y="515" text-anchor="middle" class="text">等待退款/换货处理</text>
+  
+  <!-- 步骤8 -->
+  <rect x="80" y="610" width="240" height="70" rx="8" ry="8" class="consumer"/>
+  <text x="105" y="645" class="step-number">8.</text>
+  <text x="200" y="645" text-anchor="middle" class="text">确认收货/收到退款</text>
+  
+  <!-- 步骤9 -->
+  <rect x="80" y="740" width="240" height="70" rx="8" ry="8" class="state"/>
+  <text x="105" y="775" class="step-number">9.</text>
+  <text x="200" y="775" text-anchor="middle" class="text">售后流程完成</text>
+  
+  <!-- 商户流程 -->
+  <!-- 步骤3 -->
+  <rect x="440" y="120" width="240" height="70" rx="8" ry="8" class="merchant"/>
+  <text x="465" y="155" class="step-number">3.</text>
+  <text x="560" y="155" text-anchor="middle" class="text">审核售后申请</text>
+  
+  <!-- 审核结果 -->
+  <rect x="440" y="220" width="240" height="100" rx="8" ry="8" class="merchant"/>
+  <text x="560" y="250" text-anchor="middle" class="text" font-weight="bold">审核结果:</text>
+  <text x="560" y="280" text-anchor="middle" class="text">同意售后处理</text>
+  <text x="560" y="310" text-anchor="middle" class="text">or 拒绝售后申请</text>
+  
+  <!-- 步骤5 -->
+  <rect x="440" y="350" width="240" height="70" rx="8" ry="8" class="merchant"/>
+  <text x="465" y="385" class="step-number">5.</text>
+  <text x="560" y="385" text-anchor="middle" class="text">确认收货/商品验收</text>
+  
+  <!-- 步骤7 -->
+  <rect x="440" y="450" width="240" height="90" rx="8" ry="8" class="merchant"/>
+  <text x="465" y="485" class="step-number">7.</text>
+  <text x="560" y="485" text-anchor="middle" class="text">处理退款/换货</text>
+  <text x="560" y="515" text-anchor="middle" class="text">（操作退款/发货）</text>
+  
+  <!-- COD订单处理 -->
+  <rect x="440" y="570" width="240" height="120" rx="8" ry="8" class="merchant"/>
+  <text x="560" y="610" text-anchor="middle" class="text" font-weight="bold">COD订单特殊处理:</text>
+  <text x="560" y="640" text-anchor="middle" class="text">上传退款凭证</text>
+  <text x="560" y="670" text-anchor="middle" class="text">等待平台与用户确认</text>
+  
+  <!-- 平台流程 -->
+  <!-- 基础配置 -->
+  <rect x="800" y="120" width="240" height="70" rx="8" ry="8" class="platform"/>
+  <text x="920" y="155" text-anchor="middle" class="text">配置售后规则</text>
+  
+  <!-- 时效监控 -->
+  <rect x="800" y="220" width="240" height="70" rx="8" ry="8" class="platform"/>
+  <text x="920" y="255" text-anchor="middle" class="text">监控SLA时效</text>
+  
+  <!-- 仲裁处理 -->
+  <rect x="800" y="320" width="240" height="70" rx="8" ry="8" class="platform"/>
+  <text x="920" y="355" text-anchor="middle" class="text">平台介入仲裁</text>
+  
+  <!-- 强制操作 -->
+  <rect x="800" y="420" width="240" height="70" rx="8" ry="8" class="platform"/>
+  <text x="920" y="455" text-anchor="middle" class="text">强制退款操作</text>
+  
+  <!-- COD审核 -->
+  <rect x="800" y="520" width="240" height="70" rx="8" ry="8" class="platform"/>
+  <text x="920" y="555" text-anchor="middle" class="text">审核COD退款凭证</text>
+  
+  <!-- 数据分析 -->
+  <rect x="800" y="620" width="240" height="70" rx="8" ry="8" class="platform"/>
+  <text x="920" y="655" text-anchor="middle" class="text">数据分析与统计</text>
+  
+  <!-- 操作日志 -->
+  <rect x="800" y="720" width="240" height="70" rx="8" ry="8" class="platform"/>
+  <text x="920" y="755" text-anchor="middle" class="text">记录操作日志</text>
+  
+  <!-- 主要流程箭头连接 -->
+  <!-- 1. 消费者 -> 商户 (申请提交) -->
+  <line x1="320" y1="155" x2="440" y2="155" class="arrow"/>
+  
+  <!-- 2. 商户 -> 消费者 (审核结果) -->
+  <line x1="440" y1="320" x2="320" y2="350" class="arrow"/>
+  <text x="380" y="325" text-anchor="middle" class="note-text">审核通过</text>
+  
+  <!-- 3. 消费者 -> 商户 (寄回商品) -->
+  <line x1="320" y1="385" x2="440" y2="385" class="arrow"/>
+  
+  <!-- 4. 商户 -> 消费者 (退款/换货) -->
+  <line x1="440" y1="505" x2="320" y2="515" class="arrow"/>
+  
+  <!-- 5. 消费者 -> 消费者 (流程结束) -->
+  <line x1="200" y1="680" x2="200" y2="740" class="arrow"/>
+  
+  <!-- 平台介入触发条件 -->
+  <!-- 商户拒绝触发平台介入 -->
+  <line x1="560" y1="330" x2="920" y2="320" class="dashed-arrow"/>
+  <text x="740" y="310" text-anchor="middle" class="note-text" fill="#ff4d4f">商户拒绝/超时</text>
+  
+  <!-- 用户申请介入 -->
+  <line x1="200" y1="290" x2="920" y2="320" class="dashed-arrow"/>
+  <text x="560" y="280" text-anchor="middle" class="note-text" fill="#ff4d4f">用户申请介入</text>
+  
+  <!-- COD凭证提交 -->
+  <line x1="560" y1="690" x2="920" y2="520" class="dashed-arrow"/>
+  <text x="740" y="600" text-anchor="middle" class="note-text" fill="#ff4d4f">提交COD凭证</text>
+  
+  <!-- 平台介入后处理 -->
+  <!-- 仲裁结果 -->
+  <line x1="920" y1="390" x2="560" y2="450" class="dashed-arrow"/>
+  <text x="740" y="410" text-anchor="middle" class="note-text" fill="#fa8c16">仲裁结果</text>
+  
+  <!-- 强制退款 -->
+  <line x1="920" y1="490" x2="440" y2="450" class="dashed-arrow"/>
+  <text x="680" y="460" text-anchor="middle" class="note-text" fill="#fa8c16">强制退款</text>
+  
+  <!-- 平台内部流程 -->
+  <!-- 配置到监控 -->
+  <line x1="920" y1="190" x2="920" y2="220" class="arrow"/>
+  
+  <!-- 监控到仲裁 -->
+  <line x1="920" y1="290" x2="920" y2="320" class="arrow"/>
+  
+  <!-- 审核到分析 -->
+  <line x1="920" y1="590" x2="920" y2="620" class="arrow"/>
+  
+  <!-- 分析到日志 -->
+  <line x1="920" y1="690" x2="920" y2="720" class="arrow"/>
+  
+  <!-- 数据同步 -->
+  <line x1="560" y1="570" x2="920" y2="620" class="dashed-arrow"/>
+  <text x="740" y="590" text-anchor="middle" class="note-text" fill="#1890ff">数据同步</text>
+  
+  <!-- 图例说明 -->
+  <rect x="40" y="830" width="1120" height="60" rx="8" ry="8" fill="#fafafa" stroke="#e8e8e8"/>
+  
+  <!-- 图例项 -->
+  <rect x="80" y="850" width="20" height="15" rx="3" ry="3" class="arrow"/>
+  <text x="110" y="863" class="note-text">常规流程</text>
+  
+  <rect x="200" y="850" width="20" height="15" rx="3" ry="3" class="dashed-arrow"/>
+  <text x="230" y="863" class="note-text">特殊流程/异常处理</text>
+  
+  <rect x="380" y="850" width="20" height="15" rx="3" ry="3" class="consumer"/>
+  <text x="410" y="863" class="note-text">消费者操作</text>
+  
+  <rect x="500" y="850" width="20" height="15" rx="3" ry="3" class="merchant"/>
+  <text x="530" y="863" class="note-text">商户操作</text>
+  
+  <rect x="620" y="850" width="20" height="15" rx="3" ry="3" class="platform"/>
+  <text x="650" y="863" class="note-text">平台操作</text>
+  
+  <rect x="740" y="850" width="20" height="15" rx="3" ry="3" class="state"/>
+  <text x="770" y="863" class="note-text">等待状态</text>
+  
+  <text x="920" y="863" class="note-text">流程步骤编号按顺序执行</text>
+</svg>

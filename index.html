@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后服务原型索引</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+            background-color: #f5f5f5;
+            line-height: 1.5;
+            padding: 30px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #ff6b00;
+            margin-bottom: 40px;
+            font-size: 28px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 22px;
+        }
+        
+        h3 {
+            color: #666;
+            margin: 20px 0 15px 0;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .page-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .page-card {
+            background-color: #f9f9f9;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .page-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #ff6b00;
+        }
+        
+        .page-card-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .page-card-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .page-link {
+            display: inline-block;
+            padding: 8px 20px;
+            background-color: #ff6b00;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .page-link:hover {
+            background-color: #e55d00;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .status-card {
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-card.pending {
+            background-color: #fff7e6;
+            border-color: #ffd591;
+        }
+        
+        .status-card.processing {
+            background-color: #e6f7ff;
+            border-color: #91d5ff;
+        }
+        
+        .status-card.success {
+            background-color: #f6ffed;
+            border-color: #b7eb8f;
+        }
+        
+        .status-card.rejected {
+            background-color: #fff1f0;
+            border-color: #ffccc7;
+        }
+        
+        .status-card.canceled {
+            background-color: #f5f5f5;
+            border-color: #d9d9d9;
+        }
+        
+        .status-card.intervention {
+            background-color: #e6f7ff;
+            border-color: #91d5ff;
+        }
+        
+        .status-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .status-link {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .status-link.pending {
+            background-color: #ff9800;
+            color: #fff;
+        }
+        
+        .status-link.processing {
+            background-color: #1890ff;
+            color: #fff;
+        }
+        
+        .status-link.success {
+            background-color: #52c41a;
+            color: #fff;
+        }
+        
+        .status-link.rejected {
+            background-color: #ff4d4f;
+            color: #fff;
+        }
+        
+        .status-link.canceled {
+            background-color: #999;
+            color: #fff;
+        }
+        
+        .status-link.intervention {
+            background-color: #1890ff;
+            color: #fff;
+        }
+        
+        .app-pc-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .tab-button {
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .tab-button.active {
+            color: #ff6b00;
+        }
+        
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #ff6b00;
+        }
+        
+        .note {
+            background-color: #fff3e5;
+            border-left: 4px solid #ff6b00;
+            padding: 15px;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #666;
+            border-radius: 4px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+            
+            .page-grid,
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-button {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>售后服务原型页面导航</h1>
+        
+        <!-- 应用类型切换 -->
+        <div class="app-pc-tabs">
+            <button class="tab-button active">C端App</button>
+            <button class="tab-button">PC商城</button>
+            <button class="tab-button">商户后台</button>
+            <button class="tab-button">平台总后台</button>
+        </div>
+        
+        <!-- C端App页面 -->
+        <div class="section">
+            <h2>C端App页面</h2>
+            
+            <!-- 主要流程页面 -->
+            <h3>主要流程页面</h3>
+            <div class="page-grid">
+                <div class="page-card">
+                    <div class="page-card-title">售后申请页面</div>
+                    <div class="page-card-desc">用户提交售后申请的入口页面，包含商品信息、售后类型选择、原因选择等功能。</div>
+                    <a href="shouhou-app/src/after-sales-apply.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">售后详情页面（默认）</div>
+                    <div class="page-card-desc">展示售后申请的详细信息，包括进度时间轴、商品信息、售后信息及状态等。</div>
+                    <a href="shouhou-app/src/after-sales-detail.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">售后列表页面</div>
+                    <div class="page-card-desc">展示用户所有的售后申请记录，支持按状态筛选，提供快速访问详情功能。</div>
+                    <a href="shouhou-app/src/after-sales-list.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">订单列表页面</div>
+                    <div class="page-card-desc">移动端订单展示列表，支持查看订单详情和申请售后功能。</div>
+                    <a href="shouhou-app/src/order-list.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">物流跟踪页面</div>
+                    <div class="page-card-desc">移动端物流详情展示页面，包含物流公司、单号、状态和详细的时间线记录。</div>
+                    <a href="shouhou-app/src/logistics-tracking.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+            </div>
+            
+            <!-- 售后详情状态页面 -->
+            <h3>售后详情状态页面</h3>
+            <div class="status-grid">
+                <div class="status-card pending">
+                    <div class="status-title">待处理状态</div>
+                    <a href="shouhou-app/src/after-sales-detail-pending.html" class="status-link pending" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card processing">
+                    <div class="status-title">处理中状态</div>
+                    <a href="shouhou-app/src/after-sales-detail-processing.html" class="status-link processing" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card success">
+                    <div class="status-title">成功状态</div>
+                    <a href="shouhou-app/src/after-sales-detail-success.html" class="status-link success" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card rejected">
+                    <div class="status-title">拒绝状态</div>
+                    <a href="shouhou-app/src/after-sales-detail-rejected.html" class="status-link rejected" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card canceled">
+                    <div class="status-title">取消状态</div>
+                    <a href="shouhou-app/src/after-sales-detail-canceled.html" class="status-link canceled" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card intervention">
+                    <div class="status-title">平台介入状态</div>
+                    <a href="shouhou-app/src/after-sales-detail-intervention.html" class="status-link intervention" target="_blank">查看页面</a>
+                </div>
+            </div>
+            
+            <!-- 功能辅助页面 -->
+            <h3>功能辅助页面</h3>
+            <div class="page-grid">
+                <div class="page-card">
+                    <div class="page-card-title">物流信息填写页面</div>
+                    <div class="page-card-desc">用户在退货时填写物流信息的页面，包含快递公司选择、快递单号输入等功能。</div>
+                    <a href="shouhou-app/src/logistics-info.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">银行卡信息填写页面</div>
+                    <div class="page-card-desc">COD订单退款时填写银行卡信息的页面，包含持卡人、卡号、开户行等信息输入。</div>
+                    <a href="shouhou-app/src/bank-card-info.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">修改售后申请页面</div>
+                    <div class="page-card-desc">当售后申请被商家拒绝时，用户可以修改申请内容后重新提交。</div>
+                    <a href="shouhou-app/src/modify-after-sales.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">平台介入申请页面</div>
+                    <div class="page-card-desc">当与商家协商无果时，用户可以申请平台介入处理。</div>
+                    <a href="shouhou-app/src/platform-intervene.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">确认收货页面</div>
+                    <div class="page-card-desc">用户确认收到退款的页面，完成售后流程的最后一步。</div>
+                    <a href="shouhou-app/src/confirm-receipt.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PC商城页面 -->
+        <div class="section">
+            <h2>PC商城页面</h2>
+            
+            <!-- 主要流程页面 -->
+            <h3>主要流程页面</h3>
+            <div class="page-grid">
+                <div class="page-card">
+                    <div class="page-card-title">售后申请页面</div>
+                    <div class="page-card-desc">桌面端售后申请页面，包含商品信息、售后类型（仅退款/退货退款/换货）选择等功能。</div>
+                    <a href="shouhou-pc/src/after-sales-apply.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">售后详情页面（默认）</div>
+                    <div class="page-card-desc">桌面端售后详情页面，展示完整的售后处理进度、商品信息和操作按钮。</div>
+                    <a href="shouhou-pc/src/after-sales-detail.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">售后列表页面</div>
+                    <div class="page-card-desc">桌面端售后记录列表，支持筛选、搜索和分页功能，便于用户管理售后申请。</div>
+                    <a href="shouhou-pc/src/after-sales-list.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">订单列表页面</div>
+                    <div class="page-card-desc">桌面端订单展示列表，支持筛选和查看订单详情，是申请售后的入口页面。</div>
+                    <a href="shouhou-pc/src/order-list.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">物流跟踪页面</div>
+                    <div class="page-card-desc">桌面端物流详情展示页面，包含物流公司、单号、状态和详细的时间线记录。</div>
+                    <a href="shouhou-pc/src/logistics-tracking.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+            </div>
+            
+            <!-- 售后详情状态页面 -->
+            <h3>售后详情状态页面</h3>
+            <div class="status-grid">
+                <div class="status-card pending">
+                    <div class="status-title">待处理状态</div>
+                    <a href="shouhou-pc/src/after-sales-detail-pending.html" class="status-link pending" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card processing">
+                    <div class="status-title">处理中状态</div>
+                    <a href="shouhou-pc/src/after-sales-detail-processing.html" class="status-link processing" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card success">
+                    <div class="status-title">成功状态</div>
+                    <a href="shouhou-pc/src/after-sales-detail-success.html" class="status-link success" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card rejected">
+                    <div class="status-title">拒绝状态</div>
+                    <a href="shouhou-pc/src/after-sales-detail-rejected.html" class="status-link rejected" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card canceled">
+                    <div class="status-title">取消状态</div>
+                    <a href="shouhou-pc/src/after-sales-detail-canceled.html" class="status-link canceled" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card intervention">
+                    <div class="status-title">平台介入状态</div>
+                    <a href="shouhou-pc/src/after-sales-detail-intervention.html" class="status-link intervention" target="_blank">查看页面</a>
+                </div>
+            </div>
+            
+            <!-- 功能辅助页面 -->
+            <h3>功能辅助页面</h3>
+            <div class="page-grid">
+                <div class="page-card">
+                    <div class="page-card-title">物流信息填写页面</div>
+                    <div class="page-card-desc">桌面端物流信息填写页面，包含快递公司选择、快递单号输入和详细的退货须知。</div>
+                    <a href="shouhou-pc/src/logistics-info.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">银行卡信息填写页面</div>
+                    <div class="page-card-desc">桌面端COD订单退款时填写银行卡信息的页面，包含持卡人、卡号、开户行等信息输入。</div>
+                    <a href="shouhou-pc/src/bank-card-info.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">修改售后申请页面</div>
+                    <div class="page-card-desc">当售后申请被商家拒绝时，用户可以修改申请内容后重新提交。</div>
+                    <a href="shouhou-pc/src/modify-after-sales.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">平台介入申请页面</div>
+                    <div class="page-card-desc">当与商家协商无果时，用户可以申请平台介入处理。</div>
+                    <a href="shouhou-pc/src/platform-intervene.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">确认收货页面</div>
+                    <div class="page-card-desc">用户确认收到退款的页面，完成售后流程的最后一步。</div>
+                    <a href="shouhou-pc/src/confirm-receipt.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 商户后台页面 -->
+        <div class="section">
+            <h2>商户后台页面</h2>
+            
+            <div class="page-grid">
+                <div class="page-card">
+                    <div class="page-card-title">数据看板</div>
+                    <div class="page-card-desc">商户查看售后工单概况和统计数据的总览页面。</div>
+                    <a href="merchant-dashboard.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">售后工单</div>
+                    <div class="page-card-desc">商户管理和处理售后申请的完整工单列表页面。</div>
+                    <a href="merchant-dashboard-complete.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">平台仲裁</div>
+                    <div class="page-card-desc">商户查看和响应平台仲裁案件的管理页面。</div>
+                    <a href="merchant-platform-arbitration.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 平台总后台页面 -->
+        <div class="section">
+            <h2>平台总后台页面</h2>
+            
+            <div class="page-grid">
+                <div class="page-card">
+                    <div class="page-card-title">数据看板</div>
+                    <div class="page-card-desc">平台总后台数据概览，展示售后工单、COD退款等关键指标。</div>
+                    <a href="admin-dashboard.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">售后单管理</div>
+                    <div class="page-card-desc">平台统一管理所有售后工单的列表页面，支持筛选和批量操作。</div>
+                    <a href="admin-after-sales-list.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">售后单详情（默认）</div>
+                    <div class="page-card-desc">查看单个售后工单的详细信息，进行状态流转和处理。</div>
+                    <a href="admin-after-sales-detail.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">COD退款管理</div>
+                    <div class="page-card-desc">专门管理COD订单退款流程的页面，支持批量处理。</div>
+                    <a href="admin-cod-refund.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">售后配置管理</div>
+                    <div class="page-card-desc">配置售后规则、退款政策和服务标准的管理页面。</div>
+                    <a href="admin-after-sales-config.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">售后统计分析</div>
+                    <div class="page-card-desc">提供售后相关的数据分析和报表，支持多维度查询。</div>
+                    <a href="admin-after-sales-analysis.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">用户管理</div>
+                    <div class="page-card-desc">管理平台管理员账户和权限的功能页面。</div>
+                    <a href="admin-user-manage.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="page-card">
+                    <div class="page-card-title">操作日志</div>
+                    <div class="page-card-desc">记录和查询平台所有操作日志的审计页面。</div>
+                    <a href="admin-operation-log.html" class="page-link" target="_blank">查看页面</a>
+                </div>
+            </div>
+            
+            <!-- 售后详情状态页面 -->
+            <h3>售后详情状态页面</h3>
+            <div class="status-grid">
+                <div class="status-card pending">
+                    <div class="status-title">用户申请状态</div>
+                    <a href="admin-after-sales-detail-applying.html" class="status-link pending" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card processing">
+                    <div class="status-title">商户处理状态</div>
+                    <a href="admin-after-sales-detail-merchant-processing.html" class="status-link processing" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card intervention">
+                    <div class="status-title">平台介入状态</div>
+                    <a href="admin-after-sales-detail-platform-intervening.html" class="status-link intervention" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card success">
+                    <div class="status-title">售后成功状态</div>
+                    <a href="admin-after-sales-detail-success.html" class="status-link success" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card success">
+                    <div class="status-title">平台退款状态</div>
+                    <a href="admin-after-sales-detail-platform-refund.html" class="status-link success" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card rejected">
+                    <div class="status-title">售后拒绝状态</div>
+                    <a href="admin-after-sales-detail-rejected.html" class="status-link rejected" target="_blank">查看页面</a>
+                </div>
+                
+                <div class="status-card canceled">
+                    <div class="status-title">售后撤销状态</div>
+                    <a href="admin-after-sales-detail-canceled.html" class="status-link canceled" target="_blank">查看页面</a>
+                </div>
+            </div>
+        </div>
+        
+
+        
+        <div class="note">
+            <strong>说明：</strong><br>
+            1. 所有页面均为静态HTML原型，部分交互功能通过JavaScript实现模拟效果。<br>
+            2. 页面采用响应式设计，在不同设备上都有良好的显示效果。<br>
+            3. 商品图片使用占位图，请在实际开发中替换为真实图片资源。<br>
+            4. 所有页面均遵循了需求文档中的功能要求和交互逻辑。<br>
+        </div>
+    </div>
+    
+    <script>
+        // 标签页切换功能
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const sections = document.querySelectorAll('.section');
+        
+        // 默认显示第一个标签页内容，隐藏其他标签页内容
+        function initTabs() {
+            // 隐藏所有section，除了第一个
+            for (let i = 1; i < sections.length; i++) {
+                sections[i].style.display = 'none';
+            }
+            // 第一个section默认显示
+            if (sections[0]) {
+                sections[0].style.display = 'block';
+            }
+        }
+        
+        // 初始化标签页
+        initTabs();
+        
+        // 添加点击事件监听器
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 移除所有标签页的激活状态
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                // 激活当前点击的标签页
+                this.classList.add('active');
+                
+                // 获取当前点击的标签名称
+                const tabName = this.textContent.trim();
+                
+                // 确定要显示的section索引
+                let sectionIndex = -1;
+                if (tabName === 'C端App') sectionIndex = 0;
+                else if (tabName === 'PC商城') sectionIndex = 1;
+                else if (tabName === '商户后台') sectionIndex = 2;
+                else if (tabName === '平台总后台') sectionIndex = 3;
+                
+                // 隐藏所有section
+                sections.forEach(section => section.style.display = 'none');
+                
+                // 显示对应section
+                if (sectionIndex >= 0 && sectionIndex < sections.length) {
+                    sections[sectionIndex].style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

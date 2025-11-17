@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后单管理 - 平台总后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#ff4d4f',
+                        info: '#8c8c8c',
+                        'primary-light': '#e6f7ff',
+                        'success-light': '#f6ffed',
+                        'warning-light': '#fff7e6',
+                        'error-light': '#fff1f0',
+                        'border-color': '#e8e8e8',
+                        'text-secondary': '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+                        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .hover-scale-105 {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale-105:hover {
+                transform: scale(1.05);
+            }
+            .active-nav-item {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .badge {
+                @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-success {
+                @apply bg-success text-white hover:bg-success/90;
+            }
+            .btn-warning {
+                @apply bg-warning text-white hover:bg-warning/90;
+            }
+            .btn-error {
+                @apply bg-error text-white hover:bg-error/90;
+            }
+            .btn-outline {
+                @apply border border-border-color text-text-secondary hover:bg-gray-50;
+            }
+            .form-input {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-select {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white;
+            }
+            .form-date {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-card p-6;
+            }
+            .timeline-item {
+                @apply relative pl-8 pb-6;
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: 2px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                @apply bg-border-color;
+            }
+            .timeline-item::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 6px;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                @apply bg-primary;
+            }
+            .timeline-item:last-child::before {
+                display: none;
+            }
+            .timeline-item.completed::after {
+                @apply bg-success;
+            }
+            .timeline-item.processing::after {
+                @apply bg-primary;
+            }
+            .timeline-item.pending::after {
+                @apply bg-warning;
+            }
+            .timeline-item.rejected::after {
+                @apply bg-error;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md flex flex-col overflow-y-auto">
+            <!-- 品牌标志 -->
+            <div class="h-16 flex items-center justify-center border-b border-border-color">
+                <h1 class="text-xl font-bold text-primary">平台总后台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 py-4">
+                <div class="px-4 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    系统概览
+                </div>
+                <a href="admin-dashboard.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-tachometer w-5 mr-3 text-center"></i>
+                    <span>数据看板</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    售后管理
+                </div>
+                <a href="admin-after-sales-list.html" class="flex items-center px-4 py-3 active-nav-item transition-all-300">
+                    <i class="fa fa-list-alt w-5 mr-3 text-center"></i>
+                    <span>售后单管理</span>
+                    <span class="ml-auto bg-error text-white text-xs px-2 py-1 rounded-full">12</span>
+                </a>
+                <a href="admin-cod-refund.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-money w-5 mr-3 text-center"></i>
+                    <span>COD退款管理</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    配置管理
+                </div>
+                <a href="admin-after-sales-config.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-cog w-5 mr-3 text-center"></i>
+                    <span>售后配置管理</span>
+                </a>
+                <a href="admin-after-sales-analysis.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-bar-chart w-5 mr-3 text-center"></i>
+                    <span>售后统计分析</span>
+                </a>
+                
+
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-border-color">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full" src="https://picsum.photos/id/1005/200/200" alt="管理员头像">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">张管理员</p>
+                        <p class="text-xs text-text-secondary">超级管理员</p>
+                    </div>
+                    <button class="ml-auto text-text-secondary hover:text-error">
+                        <i class="fa fa-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-text-secondary hover:text-primary mr-4">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <a href="admin-dashboard.html" class="text-text-secondary hover:text-primary text-sm mr-2">首页</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <span class="text-sm font-medium">售后单管理</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-md text-sm border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-text-secondary hover:text-primary">
+                            <i class="fa fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-error text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">5</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="main-content">
+                <!-- 搜索筛选区域 -->
+                <div class="card mb-6">
+                    <div class="flex flex-wrap gap-4">
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-sm font-medium text-text-secondary mb-1">售后单号</label>
+                            <input type="text" class="form-input" placeholder="请输入售后单号">
+                        </div>
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-sm font-medium text-text-secondary mb-1">商户名称</label>
+                            <input type="text" class="form-input" placeholder="请输入商户名称">
+                        </div>
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-sm font-medium text-text-secondary mb-1">售后类型</label>
+                            <select class="form-select">
+                                <option value="">全部类型</option>
+                                <option value="1">仅退款</option>
+                                <option value="2">退货退款</option>
+                                <option value="3">换货</option>
+                            </select>
+                        </div>
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-sm font-medium text-text-secondary mb-1">售后状态</label>
+                            <select class="form-select">
+                                <option value="">全部状态</option>
+                                <option value="1">待审核</option>
+                                <option value="2">待处理</option>
+                                <option value="3">平台介入中</option>
+                                <option value="4">退款中</option>
+                                <option value="5">已完成</option>
+                                <option value="6">已拒绝</option>
+                                <option value="7">已取消</option>
+                            </select>
+                        </div>
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-sm font-medium text-text-secondary mb-1">申请时间范围</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="date" class="form-date">
+                                <span class="text-text-secondary">至</span>
+                                <input type="date" class="form-date">
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-sm font-medium text-text-secondary mb-1">处理人</label>
+                            <select class="form-select">
+                                <option value="">全部处理人</option>
+                                <option value="1">张管理员</option>
+                                <option value="2">李客服</option>
+                                <option value="3">王售后</option>
+                            </select>
+                        </div>
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-sm font-medium text-text-secondary mb-1">是否平台介入</label>
+                            <select class="form-select">
+                                <option value="">全部</option>
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-center space-x-3 mt-6">
+                        <button class="btn btn-primary w-24">
+                            <i class="fa fa-search mr-1"></i> 搜索
+                        </button>
+                        <button class="btn btn-outline w-24">
+                            <i class="fa fa-refresh mr-1"></i> 重置
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 售后单列表 -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-medium">售后单列表</h3>
+                        <div class="flex items-center space-x-3">
+                            <div class="relative">
+                                <button id="batch-operation-btn" class="btn btn-outline text-sm">
+                                    批量操作 <i class="fa fa-caret-down ml-1"></i>
+                                </button>
+                                <div id="batch-operation-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                                    <a href="#" class="block px-4 py-2 text-sm text-text-secondary hover:bg-gray-100">批量导出</a>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline text-sm">
+                                <i class="fa fa-download mr-1"></i> 导出
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-border-color">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="h-4 w-4 rounded border-border-color text-primary focus:ring-primary">
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        售后单号
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        商户名称
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        售后类型
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        申请金额
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        当前状态
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        申请时间
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        处理人
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        是否平台介入
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-border-color">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 rounded border-border-color text-primary focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="admin-after-sales-detail.html?id=AS202306110001" class="text-primary hover:underline">AS202306110001</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">优品百货旗舰店</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">仅退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">¥299.00</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-warning-light text-warning">平台介入中</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-text-secondary">2023-06-11 10:23:45</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">张管理员</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-error-light text-error">是</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="admin-after-sales-intervention.html?id=AS202306110001" class="text-primary hover:underline mr-3">平台处理</a>
+                                        <a href="admin-after-sales-detail.html?id=AS202306110001" class="text-text-secondary hover:text-primary">详情</a>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 rounded border-border-color text-primary focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="admin-after-sales-detail.html?id=AS202306110002" class="text-primary hover:underline">AS202306110002</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">科技数码专营店</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">退货退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">¥1299.00</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-error-light text-error">需财务复核</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-text-secondary">2023-06-11 09:15:22</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">李客服</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-success-light text-success">否</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="admin-after-sales-detail.html?id=AS202306110002" class="text-text-secondary hover:text-primary">详情</a>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 rounded border-border-color text-primary focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="admin-after-sales-detail.html?id=AS202306110003" class="text-primary hover:underline">AS202306110003</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">服装鞋帽旗舰店</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">换货</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">¥399.00</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-warning-light text-warning">平台介入中</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-text-secondary">2023-06-10 16:45:33</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">王售后</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-error-light text-error">是</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="admin-after-sales-financial-review.html?id=AS202306110003" class="text-primary hover:underline mr-3">财务复核</a>
+                                        <a href="admin-after-sales-detail.html?id=AS202306110003" class="text-text-secondary hover:text-primary">详情</a>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 rounded border-border-color text-primary focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="admin-after-sales-detail.html?id=AS202306100045" class="text-primary hover:underline">AS202306100045</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">家居生活专营店</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">仅退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">¥89.00</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-warning-light text-warning">待处理</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-text-secondary">2023-06-10 14:22:11</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">-</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-success-light text-success">否</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="admin-after-sales-intervention.html?id=AS202306100045" class="text-primary hover:underline mr-3">平台处理</a>
+                                    <a href="admin-after-sales-detail.html?id=AS202306100045" class="text-text-secondary hover:text-primary">详情</a>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 rounded border-border-color text-primary focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="admin-after-sales-detail.html?id=AS202306100044" class="text-primary hover:underline">AS202306100044</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">美妆个护旗舰店</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">退货退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">¥199.00</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-warning-light text-warning">待处理</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-text-secondary">2023-06-10 10:05:37</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">-</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-success-light text-success">否</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="admin-after-sales-refund-complete.html?id=AS202306100044" class="text-primary hover:underline mr-3">查看详情</a>
+                                    <a href="admin-after-sales-detail.html?id=AS202306100044" class="text-text-secondary hover:text-primary">详情</a>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 rounded border-border-color text-primary focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="admin-after-sales-detail.html?id=AS202306090032" class="text-primary hover:underline">AS202306090032</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">运动户外专营店</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">换货</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">¥599.00</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-success-light text-success">已完成</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-text-secondary">2023-06-09 15:30:22</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">李客服</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-success-light text-success">否</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="admin-after-sales-detail.html?id=AS202306090032" class="text-text-secondary hover:text-primary">详情</a>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 rounded border-border-color text-primary focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="admin-after-sales-detail.html?id=AS202306090031" class="text-primary hover:underline">AS202306090031</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">母婴用品旗舰店</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">仅退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium">¥129.00</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-error-light text-error">已拒绝</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-text-secondary">2023-06-09 11:45:10</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm">王售后</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-success-light text-success">否</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="admin-after-sales-detail.html?id=AS202306090031" class="text-text-secondary hover:text-primary">详情</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex items-center justify-between px-4 py-3 sm:px-6 mt-4">
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-text-secondary">
+                                    显示 <span class="font-medium">1</span> 到 <span class="font-medium">7</span> 条，共 <span class="font-medium">156</span> 条结果
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border-color bg-white text-sm font-medium text-text-secondary hover:bg-gray-50">
+                                        <i class="fa fa-chevron-left text-xs"></i>
+                                    </a>
+                                    <a href="#" aria-current="page" class="z-10 bg-primary-light text-primary relative inline-flex items-center px-4 py-2 border border-primary text-sm font-medium">
+                                        1
+                                    </a>
+                                    <a href="#" class="bg-white border-border-color text-text-secondary hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        2
+                                    </a>
+                                    <a href="#" class="bg-white border-border-color text-text-secondary hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        3
+                                    </a>
+                                    <span class="relative inline-flex items-center px-4 py-2 border border-border-color bg-white text-sm font-medium text-text-secondary">
+                                        ...
+                                    </span>
+                                    <a href="#" class="bg-white border-border-color text-text-secondary hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        23
+                                    </a>
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border-color bg-white text-sm font-medium text-text-secondary hover:bg-gray-50">
+                                        <i class="fa fa-chevron-right text-xs"></i>
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 权限控制和页面跳转逻辑：根据售后单状态和平台介入情况调整链接
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有行
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                // 获取售后单号
+                const orderNumberLink = row.querySelector('td:nth-child(2) a');
+                const orderNumber = orderNumberLink.textContent.trim();
+                
+                // 检查是否为平台介入（第9个单元格）
+                const interventionCell = row.querySelector('td:nth-child(9)');
+                // 检查处理状态（第6个单元格）
+                const statusCell = row.querySelector('td:nth-child(6)');
+                // 获取操作列（第10个单元格）
+                const actionCell = row.querySelector('td:nth-child(10)');
+                
+                if (interventionCell && actionCell) {
+                    // 检查是否包含"否"的徽章（非平台介入）
+                    const isNonIntervention = interventionCell.querySelector('.badge.bg-success-light.text-success') !== null;
+                    
+                    if (isNonIntervention) {
+                        // 移除处理按钮
+                        const processButton = actionCell.querySelector('a:first-child');
+                        if (processButton && processButton.textContent.includes('处理')) {
+                            processButton.remove();
+                        }
+                    } else {
+                        // 平台介入售后单，根据状态调整处理链接
+                        const processLink = actionCell.querySelector('a:first-child');
+                        if (processLink) {
+                            // 获取状态文本
+                            let statusText = '';
+                            if (statusCell) {
+                                const badge = statusCell.querySelector('span');
+                                if (badge) {
+                                    statusText = badge.textContent.trim();
+                                }
+                            }
+                            
+                            // 根据不同状态设置不同的处理页面
+                            if (statusText === '平台介入中') {
+                                processLink.href = `admin-after-sales-intervention.html?id=${orderNumber}`;
+                                processLink.textContent = '平台处理';
+                            } else if (statusText === '需财务复核') {
+                                processLink.href = `admin-after-sales-financial-review.html?id=${orderNumber}`;
+                                processLink.textContent = '财务复核';
+                            } else if (statusText === '已完成') {
+                                processLink.href = `admin-after-sales-refund-complete.html?id=${orderNumber}`;
+                                processLink.textContent = '查看详情';
+                            }
+                        }
+                    }
+                }
+            });
+        });
+        
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            const navTexts = document.querySelectorAll('nav span');
+            navTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const navTitles = document.querySelectorAll('nav .text-xs');
+            navTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+        });
+        
+        // 批量操作下拉菜单
+        const batchOperationBtn = document.getElementById('batch-operation-btn');
+        const batchOperationDropdown = document.getElementById('batch-operation-dropdown');
+        
+        if (batchOperationBtn && batchOperationDropdown) {
+            batchOperationBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                batchOperationDropdown.classList.toggle('hidden');
+            });
+            
+            // 点击其他地方关闭下拉菜单
+            document.addEventListener('click', function() {
+                batchOperationDropdown.classList.add('hidden');
+            });
+        }
+        
+        // 全选功能
+        const selectAllCheckbox = document.querySelector('thead input[type="checkbox"]');
+        const individualCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+        
+        if (selectAllCheckbox && individualCheckboxes.length > 0) {
+            selectAllCheckbox.addEventListener('change', function() {
+                individualCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COD退款管理 - 平台总后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#ff4d4f',
+                        info: '#8c8c8c',
+                        'primary-light': '#e6f7ff',
+                        'success-light': '#f6ffed',
+                        'warning-light': '#fff7e6',
+                        'error-light': '#fff1f0',
+                        'border-color': '#e8e8e8',
+                        'text-secondary': '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+                        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .hover-scale-105 {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale-105:hover {
+                transform: scale(1.05);
+            }
+            .active-nav-item {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .badge {
+                @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-success {
+                @apply bg-success text-white hover:bg-success/90;
+            }
+            .btn-warning {
+                @apply bg-warning text-white hover:bg-warning/90;
+            }
+            .btn-error {
+                @apply bg-error text-white hover:bg-error/90;
+            }
+            .btn-outline {
+                @apply border border-border-color text-text-secondary hover:bg-gray-50;
+            }
+            .form-input {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-select {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white;
+            }
+            .form-date {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-card p-6;
+            }
+            .pagination-item {
+                @apply px-3 py-1 rounded hover:bg-gray-100 cursor-pointer;
+            }
+            .pagination-item.active {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .table-checkbox {
+                @apply w-4 h-4 text-primary border-border-color rounded focus:ring-primary;
+            }
+            .table-row-hover {
+                @apply hover:bg-gray-50;
+            }
+            .table-cell-padding {
+                @apply px-6 py-4 whitespace-nowrap;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md flex flex-col overflow-y-auto">
+            <!-- 品牌标志 -->
+            <div class="h-16 flex items-center justify-center border-b border-border-color">
+                <h1 class="text-xl font-bold text-primary">平台总后台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 py-4">
+                <div class="px-4 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    系统概览
+                </div>
+                <a href="admin-dashboard.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-tachometer w-5 mr-3 text-center"></i>
+                    <span>数据看板</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    售后管理
+                </div>
+                <a href="admin-after-sales-list.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-list-alt w-5 mr-3 text-center"></i>
+                    <span>售后单管理</span>
+                </a>
+                <a href="admin-cod-refund.html" class="flex items-center px-4 py-3 active-nav-item transition-all-300">
+                    <i class="fa fa-money w-5 mr-3 text-center"></i>
+                    <span>COD退款管理</span>
+                    <span class="ml-auto bg-warning text-white text-xs px-2 py-1 rounded-full">5</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    配置管理
+                </div>
+                <a href="admin-after-sales-config.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-cog w-5 mr-3 text-center"></i>
+                    <span>售后配置管理</span>
+                </a>
+                <a href="admin-after-sales-analysis.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-bar-chart w-5 mr-3 text-center"></i>
+                    <span>售后统计分析</span>
+                </a>
+                
+
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-border-color">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full" src="https://picsum.photos/id/1005/200/200" alt="管理员头像">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">张管理员</p>
+                        <p class="text-xs text-text-secondary">超级管理员</p>
+                    </div>
+                    <button class="ml-auto text-text-secondary hover:text-error">
+                        <i class="fa fa-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-text-secondary hover:text-primary mr-4">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <a href="admin-dashboard.html" class="text-text-secondary hover:text-primary text-sm mr-2">首页</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <span class="text-sm font-medium">COD退款管理</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-md text-sm border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-text-secondary hover:text-primary">
+                            <i class="fa fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-error text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">5</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="main-content">
+                <!-- 概览卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-text-secondary text-sm">待处理退款</p>
+                                <p class="text-2xl font-bold mt-2">5</p>
+                                <p class="text-success text-xs mt-1"><i class="fa fa-arrow-up"></i> 较昨日 +2</p>
+                            </div>
+                            <div class="w-12 h-12 bg-primary-light rounded-full flex items-center justify-center">
+                                <i class="fa fa-clock-o text-2xl text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-text-secondary text-sm">今日退款金额</p>
+                                <p class="text-2xl font-bold mt-2">¥8,542</p>
+                                <p class="text-success text-xs mt-1"><i class="fa fa-arrow-up"></i> 较昨日 +12%</p>
+                            </div>
+                            <div class="w-12 h-12 bg-success-light rounded-full flex items-center justify-center">
+                                <i class="fa fa-money text-2xl text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-text-secondary text-sm">本月退款总数</p>
+                                <p class="text-2xl font-bold mt-2">142</p>
+                                <p class="text-error text-xs mt-1"><i class="fa fa-arrow-down"></i> 较上月 -5%</p>
+                            </div>
+                            <div class="w-12 h-12 bg-warning-light rounded-full flex items-center justify-center">
+                                <i class="fa fa-shopping-cart text-2xl text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-text-secondary text-sm">平均处理时长</p>
+                                <p class="text-2xl font-bold mt-2">2.5小时</p>
+                                <p class="text-success text-xs mt-1"><i class="fa fa-arrow-down"></i> 较上周 -0.5小时</p>
+                            </div>
+                            <div class="w-12 h-12 bg-info/10 rounded-full flex items-center justify-center">
+                                <i class="fa fa-tachometer text-2xl text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 筛选搜索区 -->
+                <div class="card mb-6">
+                    <h3 class="font-medium mb-4">筛选条件</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-text-secondary mb-1">退款单号</label>
+                            <input type="text" class="form-input" placeholder="请输入退款单号">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text-secondary mb-1">订单编号</label>
+                            <input type="text" class="form-input" placeholder="请输入订单编号">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text-secondary mb-1">退款状态</label>
+                            <select class="form-select">
+                                <option value="">全部</option>
+                                <option value="pending">待审核</option>
+                                <option value="approved">已通过</option>
+                                <option value="rejected">已拒绝</option>
+                                <option value="processing">退款中</option>
+                                <option value="completed">已完成</option>
+                                <option value="failed">退款失败</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text-secondary mb-1">退款方式</label>
+                            <select class="form-select">
+                                <option value="">全部</option>
+                                <option value="online">在线支付退款</option>
+                                <option value="offline">线下退款</option>
+                                <option value="cashback">现金返还</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-text-secondary mb-1">用户ID</label>
+                            <input type="text" class="form-input" placeholder="请输入用户ID">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text-secondary mb-1">退款金额范围</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" class="form-input" placeholder="最小金额">
+                                <span>-</span>
+                                <input type="number" class="form-input" placeholder="最大金额">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text-secondary mb-1">申请时间</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="date" class="form-date">
+                                <span>至</span>
+                                <input type="date" class="form-date">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text-secondary mb-1">商户名称</label>
+                            <input type="text" class="form-input" placeholder="请输入商户名称">
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end space-x-3">
+                        <button class="btn btn-outline">
+                            <i class="fa fa-refresh mr-1"></i> 重置
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fa fa-search mr-1"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 数据列表 -->
+                <div class="card mb-6">
+                    <div class="flex flex-wrap items-center justify-between mb-4">
+                        <h3 class="font-medium">COD退款列表</h3>
+                        <div class="flex items-center space-x-3 mt-4 sm:mt-0">
+                            <div class="relative">
+                                <button id="batch-operation-btn" class="btn btn-outline">
+                                    批量操作 <i class="fa fa-caret-down ml-1"></i>
+                                </button>
+                                <div id="batch-operation-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                                    <a href="#" class="block px-4 py-2 text-sm text-text-secondary hover:bg-gray-100">批量审核通过</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-text-secondary hover:bg-gray-100">批量审核拒绝</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-text-secondary hover:bg-gray-100">批量导出</a>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline">
+                                <i class="fa fa-download mr-1"></i> 导出数据
+                            </button>
+                            <div class="relative">
+                                <select class="form-select pr-8">
+                                    <option value="20">20条/页</option>
+                                    <option value="50">50条/页</option>
+                                    <option value="100">100条/页</option>
+                                </select>
+                                <i class="fa fa-caret-down absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-border-color">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="table-checkbox" id="select-all">
+                                            <label for="select-all" class="sr-only">全选</label>
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        退款单号
+                                        <button class="ml-1 text-text-secondary hover:text-primary">
+                                            <i class="fa fa-sort"></i>
+                                        </button>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        订单编号
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        用户信息
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        退款金额
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        退款方式
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        退款状态
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        申请时间
+                                        <button class="ml-1 text-text-secondary hover:text-primary">
+                                            <i class="fa fa-sort-desc"></i>
+                                        </button>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-border-color">
+                                <tr class="table-row-hover">
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="table-checkbox">
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium text-gray-900">CR202306150001</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">SO202306140001</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">
+                                            <div class="font-medium">小明同学</div>
+                                            <div class="text-text-secondary text-xs mt-1">U1000123</div>
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium">¥299.00</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">在线支付退款</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <span class="badge bg-warning-light text-warning">待审核</span>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">2023-06-15 10:23:45</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-primary hover:text-primary/80">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                            <button class="text-success hover:text-success/80">
+                                                <i class="fa fa-check-circle"></i>
+                                            </button>
+                                            <button class="text-error hover:text-error/80">
+                                                <i class="fa fa-times-circle"></i>
+                                            </button>
+                                            <div class="relative">
+                                                <button class="text-text-secondary hover:text-text-secondary/80">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="table-row-hover">
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="table-checkbox">
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium text-gray-900">CR202306150002</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">SO202306140005</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">
+                                            <div class="font-medium">小红同学</div>
+                                            <div class="text-text-secondary text-xs mt-1">U1000124</div>
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium">¥599.00</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">在线支付退款</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <span class="badge bg-primary-light text-primary">退款中</span>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">2023-06-15 09:15:32</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-primary hover:text-primary/80">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                            <div class="relative">
+                                                <button class="text-text-secondary hover:text-text-secondary/80">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="table-row-hover">
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="table-checkbox">
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium text-gray-900">CR202306150003</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">SO202306130012</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">
+                                            <div class="font-medium">小李同学</div>
+                                            <div class="text-text-secondary text-xs mt-1">U1000125</div>
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium">¥129.00</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">线下退款</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <span class="badge bg-success-light text-success">已完成</span>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">2023-06-15 08:42:17</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-primary hover:text-primary/80">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                            <div class="relative">
+                                                <button class="text-text-secondary hover:text-text-secondary/80">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="table-row-hover">
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="table-checkbox">
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium text-gray-900">CR202306140008</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">SO202306130025</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">
+                                            <div class="font-medium">小王同学</div>
+                                            <div class="text-text-secondary text-xs mt-1">U1000126</div>
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium">¥899.00</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">在线支付退款</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <span class="badge bg-error-light text-error">退款失败</span>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">2023-06-14 16:30:45</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-primary hover:text-primary/80">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                            <button class="text-primary hover:text-primary/80">
+                                                <i class="fa fa-refresh"></i>
+                                            </button>
+                                            <div class="relative">
+                                                <button class="text-text-secondary hover:text-text-secondary/80">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="table-row-hover">
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="table-checkbox">
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium text-gray-900">CR202306140007</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">SO202306120036</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">
+                                            <div class="font-medium">小张同学</div>
+                                            <div class="text-text-secondary text-xs mt-1">U1000127</div>
+                                        </div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm font-medium">¥399.00</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">现金返还</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <span class="badge bg-info/10 text-info">已拒绝</span>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="text-sm">2023-06-14 15:18:22</div>
+                                    </td>
+                                    <td class="table-cell-padding">
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-primary hover:text-primary/80">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                            <div class="relative">
+                                                <button class="text-text-secondary hover:text-text-secondary/80">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex items-center justify-between mt-6">
+                        <div class="text-sm text-text-secondary">
+                            显示 1-5 条，共 24 条
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button class="pagination-item disabled opacity-50">
+                                <i class="fa fa-angle-left"></i>
+                            </button>
+                            <button class="pagination-item active">1</button>
+                            <button class="pagination-item">2</button>
+                            <button class="pagination-item">3</button>
+                            <button class="pagination-item">4</button>
+                            <button class="pagination-item">5</button>
+                            <button class="pagination-item">
+                                <i class="fa fa-angle-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            const navTexts = document.querySelectorAll('nav span');
+            navTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const navTitles = document.querySelectorAll('nav .text-xs');
+            navTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+        });
+        
+        // 批量操作下拉菜单
+        const batchOperationBtn = document.getElementById('batch-operation-btn');
+        const batchOperationDropdown = document.getElementById('batch-operation-dropdown');
+        
+        if (batchOperationBtn && batchOperationDropdown) {
+            batchOperationBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                batchOperationDropdown.classList.toggle('hidden');
+            });
+            
+            // 点击其他地方关闭下拉菜单
+            document.addEventListener('click', function() {
+                batchOperationDropdown.classList.add('hidden');
+            });
+        }
+        
+        // 全选功能
+        const selectAllCheckbox = document.getElementById('select-all');
+        const rowCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+        
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                rowCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
+        
+        // 模拟数据加载和交互效果
+        // 在实际应用中，这里会替换为真实的数据请求和处理逻辑
+        
+        // 表格行悬停效果增强
+        const tableRows = document.querySelectorAll('.table-row-hover');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f9fafb';
+            });
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+        
+        // 分页按钮点击效果
+        const paginationItems = document.querySelectorAll('.pagination-item:not(.disabled)');
+        paginationItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有活跃状态
+                document.querySelectorAll('.pagination-item').forEach(p => {
+                    p.classList.remove('active');
+                });
+                // 添加当前活跃状态
+                this.classList.add('active');
+                // 在实际应用中，这里会触发分页数据请求
+            });
+        });
+    </script>
+</body>
+</html>

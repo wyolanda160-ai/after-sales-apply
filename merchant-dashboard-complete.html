@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商户后台 - 售后管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#ff4d4f',
+                        info: '#8c8c8c',
+                        'primary-light': '#e6f7ff',
+                        'success-light': '#f6ffed',
+                        'warning-light': '#fff7e6',
+                        'error-light': '#fff1f0',
+                        'border-color': '#e8e8e8',
+                        'text-secondary': '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+                        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .hover-scale-105 {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale-105:hover {
+                transform: scale(1.05);
+            }
+            .active-nav-item {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .badge {
+                @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-success {
+                @apply bg-success text-white hover:bg-success/90;
+            }
+            .btn-warning {
+                @apply bg-warning text-white hover:bg-warning/90;
+            }
+            .btn-error {
+                @apply bg-error text-white hover:bg-error/90;
+            }
+            .btn-outline {
+                @apply border border-border-color text-text-secondary hover:bg-gray-50;
+            }
+            .form-input {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-select {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white;
+            }
+            .form-date {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-card p-6;
+            }
+            .timeline-item {
+                @apply relative pl-8 pb-6;
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: 2px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                @apply bg-border-color;
+            }
+            .timeline-item::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 6px;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                @apply bg-primary;
+            }
+            .timeline-item:last-child::before {
+                display: none;
+            }
+            .timeline-item.completed::after {
+                @apply bg-success;
+            }
+            .timeline-item.processing::after {
+                @apply bg-primary;
+            }
+            .timeline-item.pending::after {
+                @apply bg-warning;
+            }
+            .timeline-item.rejected::after {
+                @apply bg-error;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md flex flex-col overflow-y-auto">
+            <!-- 品牌标志 -->
+            <div class="h-16 flex items-center justify-center border-b border-border-color">
+                <h1 class="text-xl font-bold text-primary">商户后台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 py-4">
+                <div class="px-4 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    系统概览
+                </div>
+                <a href="merchant-dashboard.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-tachometer w-5 mr-3 text-center"></i>
+                    <span>数据看板</span>
+                </a>
+                
+                <!-- 订单管理部分已移除 -->
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    售后管理
+                </div>
+                <a href="merchant-dashboard-complete.html" class="flex items-center px-4 py-3 active-nav-item transition-all-300">
+                    <i class="fa fa-headphones w-5 mr-3 text-center"></i>
+                    <span>售后工单</span>
+                </a>
+
+                <a href="merchant-platform-arbitration.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-gavel w-5 mr-3 text-center"></i>
+                    <span>平台仲裁</span>
+                </a>
+                
+                <!-- 商品与库存部分已移除 -->
+                <!-- 账户设置部分已移除 -->
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-border-color">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full" src="https://picsum.photos/id/1005/200/200" alt="商户头像">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">优品百货旗舰店</p>
+                        <p class="text-xs text-text-secondary">金牌商户</p>
+                    </div>
+                    <button class="ml-auto text-text-secondary hover:text-error">
+                        <i class="fa fa-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-text-secondary hover:text-primary mr-4">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <h2 class="text-lg font-medium">售后工单管理</h2>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索工单..." class="pl-10 pr-4 py-2 rounded-md text-sm border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-text-secondary hover:text-primary" id="notification-btn">
+                            <i class="fa fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-error text-white text-xs w-4 h-4 flex items-center justify-center rounded-full" id="notification-badge">5</span>
+                        </button>
+                        <!-- 通知下拉菜单 -->
+                        <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-dropdown py-1 hidden">
+                            <div class="px-4 py-2 border-b border-border-color">
+                                <h3 class="font-medium">通知消息</h3>
+                            </div>
+                            <div class="max-h-96 overflow-y-auto" id="notification-list">
+                                <!-- 催办提醒通知 -->
+                                <div class="px-4 py-3 hover:bg-gray-50 cursor-pointer border-l-2 border-warning notification-item">
+                                    <div class="flex items-start">
+                                        <i class="fa fa-exclamation-circle text-warning mt-0.5 mr-2"></i>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium">审核催办提醒</p>
+                                            <p class="text-xs text-text-secondary mt-1">用户张** 对工单 AS202306150001 发起了催办，请尽快处理</p>
+                                            <p class="text-xs text-text-secondary mt-1">1分钟前</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 其他通知示例 -->
+                                <div class="px-4 py-3 hover:bg-gray-50 cursor-pointer notification-item">
+                                    <div class="flex items-start">
+                                        <i class="fa fa-check-circle text-success mt-0.5 mr-2"></i>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium">退款完成</p>
+                                            <p class="text-xs text-text-secondary mt-1">工单 AS202306120004 退款已完成</p>
+                                            <p class="text-xs text-text-secondary mt-1">30分钟前</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-3 hover:bg-gray-50 cursor-pointer notification-item">
+                                    <div class="flex items-start">
+                                        <i class="fa fa-truck text-primary mt-0.5 mr-2"></i>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium">用户已退货</p>
+                                            <p class="text-xs text-text-secondary mt-1">用户李** 已寄回商品，运单号：SF1234567890</p>
+                                            <p class="text-xs text-text-secondary mt-1">2小时前</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-4 py-2 border-t border-border-color text-center">
+                                <a href="#" class="text-sm text-primary hover:underline">查看全部通知</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="flex items-center text-text-secondary hover:text-primary">
+                            <i class="fa fa-question-circle text-xl mr-2"></i>
+                            <span>帮助</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="main-content">
+                <!-- 售后数据概览卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="card hover-scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-text-secondary">待处理工单</p>
+                                <h3 class="text-2xl font-bold mt-2">12</h3>
+                                <p class="text-xs text-error mt-1"><i class="fa fa-arrow-up"></i> 较昨日 +2</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-warning-light flex items-center justify-center">
+                                <i class="fa fa-clock-o text-warning text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card hover-scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-text-secondary">今日新增</p>
+                                <h3 class="text-2xl font-bold mt-2">8</h3>
+                                <p class="text-xs text-success mt-1"><i class="fa fa-arrow-down"></i> 较昨日 -1</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center">
+                                <i class="fa fa-plus-circle text-primary text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card hover-scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-text-secondary">本月完成</p>
+                                <h3 class="text-2xl font-bold mt-2">156</h3>
+                                <p class="text-xs text-success mt-1"><i class="fa fa-arrow-up"></i> 较上月 +12.5%</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-success-light flex items-center justify-center">
+                                <i class="fa fa-check-circle text-success text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card hover-scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-text-secondary">平台介入</p>
+                                <h3 class="text-2xl font-bold mt-2">3</h3>
+                                <p class="text-xs text-warning mt-1"><i class="fa fa-exclamation-triangle"></i> 需要处理</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-error-light flex items-center justify-center">
+                                <i class="fa fa-gavel text-error text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 售后趋势图表 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="card lg:col-span-2">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-medium">售后工单趋势</h3>
+                            <div class="flex space-x-2">
+                                <button class="btn btn-sm btn-primary text-xs">本周</button>
+                                <button class="btn btn-sm btn-outline text-xs">本月</button>
+                                <button class="btn btn-sm btn-outline text-xs">全年</button>
+                            </div>
+                        </div>
+                        <div>
+                            <canvas id="afterSalesChart" height="250"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="mb-6">
+                            <h3 class="font-medium">售后类型分布</h3>
+                        </div>
+                        <div class="flex justify-center">
+                            <canvas id="afterSalesTypeChart" width="200" height="200"></canvas>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mt-4">
+                            <div class="text-center">
+                                <p class="text-xs text-text-secondary">仅退款</p>
+                                <p class="text-lg font-bold">42%</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-xs text-text-secondary">退货退款</p>
+                                <p class="text-lg font-bold">38%</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-xs text-text-secondary">换货</p>
+                                <p class="text-lg font-bold">20%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 售后工单列表 -->
+                <div class="card">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                        <h3 class="font-medium mb-4 sm:mb-0">售后工单列表</h3>
+                        
+                        <!-- 筛选条件 -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <select class="form-select">
+                                <option value="">全部状态</option>
+                                <option value="WAIT_MERCHANT_AUDIT">待审核</option>
+                                <option value="WAIT_USER_RETURN">待用户退货</option>
+                                <option value="USER_RETURNED">用户已寄回</option>
+                                <option value="WAIT_REFUND">待退款</option>
+                                <option value="REFUNDING">退款中</option>
+                                <option value="REFUNDED">已退款</option>
+                                <option value="EXCHANGE_SHIPPING">换货中</option>
+                                <option value="PLATFORM_PROCESS">平台介入中</option>
+                                <option value="SUCCESS">售后完成</option>
+                                <option value="REJECTED">已拒绝</option>
+                                <option value="CLOSED">已关闭</option>
+                            </select>
+                            
+                            <select class="form-select">
+                                <option value="">全部类型</option>
+                                <option value="REFUND">仅退款</option>
+                                <option value="RETURN_REFUND">退货退款</option>
+                                <option value="EXCHANGE">换货</option>
+                            </select>
+                            
+                            <select class="form-select">
+                                <option value="">全部支付方式</option>
+                                <option value="ONLINE">在线支付</option>
+                                <option value="COD">货到付款</option>
+                            </select>
+                            
+                            <input type="date" class="form-date">
+                        </div>
+                    </div>
+                    
+                    <!-- 工单列表表格 -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-border-color">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-10">
+                                        <input type="checkbox" class="h-4 w-4 text-primary border-border-color rounded focus:ring-primary">
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        售后单号
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        订单号
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        商品信息
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        用户昵称
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        售后类型
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        支付方式
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        当前状态
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        提交时间
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        剩余处理时效
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-border-color">
+                                <!-- 待审核工单（有催办标记） -->
+                                <tr class="bg-warning-light/20">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary border-border-color rounded focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <a href="#" class="text-primary hover:underline">AS202306150001</a>
+                                            <span class="ml-2 badge bg-warning text-white flex items-center">
+                                                <i class="fa fa-bell-o mr-1"></i>催办
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-text-secondary hover:text-primary">OD202306100001</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-md" src="https://picsum.photos/id/101/200/200" alt="商品图片">
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium">纯棉短袖T恤</p>
+                                                <p class="text-xs text-text-secondary">黑色 / XL</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">张**</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">仅退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-info-light text-info">在线支付</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-warning-light text-warning">待审核</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">2023-06-15 10:23:45</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm text-warning"><i class="fa fa-clock-o mr-1"></i> 剩余 23小时</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80 mr-3" onclick="openDetailModal('AS202306150001', '待审核', '退货退款')">查看详情</button>
+                                        <button class="text-success hover:text-success/80 mr-3" onclick="showAuditConfirm('同意')">同意</button>
+                                        <button class="text-error hover:text-error/80" onclick="showAuditConfirm('拒绝')">拒绝</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 待用户退货工单 -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary border-border-color rounded focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-primary hover:underline">AS202306140002</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-text-secondary hover:text-primary">OD202306090002</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-md" src="https://picsum.photos/id/102/200/200" alt="商品图片">
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium">夏季连衣裙</p>
+                                                <p class="text-xs text-text-secondary">蓝色 / M</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">李**</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">退货退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-info-light text-info">在线支付</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">待用户退货</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">2023-06-14 16:45:12</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm text-text-secondary">-</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80" onclick="openDetailModal('AS202306140002', '待用户退货', '退货退款')">查看详情</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 用户已寄回工单 -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary border-border-color rounded focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-primary hover:underline">AS202306130003</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-text-secondary hover:text-primary">OD202306080003</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-md" src="https://picsum.photos/id/103/200/200" alt="商品图片">
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium">运动跑鞋</p>
+                                                <p class="text-xs text-text-secondary">白色 / 42码</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">王**</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">退货退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-warning-light text-warning">货到付款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-success-light text-success">用户已寄回</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">2023-06-13 09:12:34</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm text-text-secondary"><i class="fa fa-truck mr-1"></i> 运输中</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80 mr-3" onclick="openDetailModal('AS202306130003', '用户已寄回', '换货')">查看详情</button>
+                                        <button class="text-success hover:text-success/80 mr-3" onclick="confirmReceipt()">确认收货</button>
+                                        <button class="text-error hover:text-error/80" onclick="rejectReceipt()">拒收</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 待退款工单 -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary border-border-color rounded focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-primary hover:underline">AS202306120004</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-text-secondary hover:text-primary">OD202306070004</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-md" src="https://picsum.photos/id/104/200/200" alt="商品图片">
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium">智能手表</p>
+                                                <p class="text-xs text-text-secondary">黑色 / 标准版</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">赵**</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">仅退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-warning-light text-warning">货到付款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-warning-light text-warning">待退款</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">2023-06-12 14:30:22</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm text-warning"><i class="fa fa-clock-o mr-1"></i> 剩余 1天</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80 mr-3" onclick="openDetailModal('AS202306120004', '待退款', '退货退款')">查看详情</button>
+                                        <button class="text-primary hover:text-primary/80" onclick="uploadRefundProof()">上传凭证</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 平台介入中工单 -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary border-border-color rounded focus:ring-primary">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-primary hover:underline">AS202306110005</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-text-secondary hover:text-primary">OD202306060005</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-md" src="https://picsum.photos/id/105/200/200" alt="商品图片">
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium">无线耳机</p>
+                                                <p class="text-xs text-text-secondary">白色 / 标准版</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">陈**</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-primary-light text-primary">换货</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-info-light text-info">在线支付</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-error-light text-error">平台介入中</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">2023-06-11 11:05:37</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm text-warning"><i class="fa fa-clock-o mr-1"></i> 剩余 24小时</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-primary hover:text-primary/80 mr-3" onclick="openDetailModal('AS202306110005', '平台介入中', '换货')">查看详情</button>
+                                        <button class="text-primary hover:text-primary/80" onclick="uploadArbitrationProof()">上传凭证</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex items-center justify-between px-4 py-3 sm:px-6 mt-4">
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-text-secondary">
+                                    显示第 <span class="font-medium">1</span> 至 <span class="font-medium">5</span> 条，共 <span class="font-medium">24</span> 条记录
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border-color bg-white text-sm font-medium text-text-secondary hover:bg-gray-50">
+                                        <span class="sr-only">上一页</span>
+                                        <i class="fa fa-chevron-left h-4 w-4"></i>
+                                    </a>
+                                    <a href="#" aria-current="page" class="relative inline-flex items-center px-4 py-2 border border-primary bg-primary-light text-sm font-medium text-primary">
+                                        1
+                                    </a>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-border-color bg-white text-sm font-medium text-text-secondary hover:bg-gray-50">
+                                        2
+                                    </a>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-border-color bg-white text-sm font-medium text-text-secondary hover:bg-gray-50">
+                                        3
+                                    </a>
+                                    <span class="relative inline-flex items-center px-4 py-2 border border-border-color bg-white text-sm font-medium text-text-secondary">
+                                        ...
+                                    </span>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-border-color bg-white text-sm font-medium text-text-secondary hover:bg-gray-50">
+                                        5
+                                    </a>
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border-color bg-white text-sm font-medium text-text-secondary hover:bg-gray-50">
+                                        <span class="sr-only">下一页</span>
+                                        <i class="fa fa-chevron-right h-4 w-4"></i>
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 售后详情模态框 -->
+    <div id="detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-dropdown w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+            <!-- 模态框头部 -->
+            <div class="px-6 py-4 border-b border-border-color flex items-center justify-between">
+                <h3 class="text-lg font-medium" id="modal-title">售后详情 - AS202306150001</h3>
+                <button class="text-text-secondary hover:text-error" onclick="closeDetailModal()">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- 模态框内容 -->
+            <div class="overflow-y-auto p-6" id="modal-content">
+                <!-- 基础信息区 -->
+                <div class="mb-8">
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">基础信息</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-xs text-text-secondary">售后单号</p>
+                            <p class="text-sm font-medium mt-1" id="modal-after-sale-id">AS202306150001</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-xs text-text-secondary">订单编号</p>
+                            <p class="text-sm font-medium mt-1">OD202306100001</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-xs text-text-secondary">售后类型</p>
+                            <p class="text-sm font-medium mt-1">仅退款</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-xs text-text-secondary">支付方式</p>
+                            <p class="text-sm font-medium mt-1">在线支付</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-xs text-text-secondary">申请时间</p>
+                            <p class="text-sm font-medium mt-1">2023-06-15 10:23:45</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-xs text-text-secondary">申请金额</p>
+                            <p class="text-sm font-medium text-error mt-1">¥199.00</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-xs text-text-secondary">当前状态</p>
+                            <p class="text-sm font-medium text-warning mt-1" id="modal-status">待审核</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-xs text-text-secondary">处理时效</p>
+                            <p class="text-sm font-medium text-warning mt-1" id="modal-time-limit">剩余 23小时</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 用户申请信息区 -->
+                <div class="mb-8">
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">用户申请信息</h4>
+                    <div class="bg-white border border-border-color rounded-md p-6">
+                        <div class="mb-4">
+                            <p class="text-xs text-text-secondary">售后原因</p>
+                            <p class="text-sm mt-1">商品与描述不符</p>
+                        </div>
+                        <div class="mb-4">
+                            <p class="text-xs text-text-secondary">申请说明</p>
+                            <p class="text-sm mt-1">收到的商品颜色与页面展示不一致，希望申请退款。</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-secondary">凭证图片</p>
+                            <div class="flex flex-wrap gap-4 mt-2">
+                                <img src="https://picsum.photos/id/111/400/400" alt="凭证图片1" class="w-24 h-24 object-cover rounded-md cursor-pointer">
+                                <img src="https://picsum.photos/id/112/400/400" alt="凭证图片2" class="w-24 h-24 object-cover rounded-md cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商品信息区 -->
+                <div class="mb-8">
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">商品信息</h4>
+                    <div class="bg-white border border-border-color rounded-md overflow-hidden">
+                        <table class="min-w-full divide-y divide-border-color">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        商品图片
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        商品信息
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        单价
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        数量
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                        小计
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-border-color">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <img src="https://picsum.photos/id/101/200/200" alt="商品图片" class="w-16 h-16 object-cover rounded-md">
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="text-sm font-medium">纯棉短袖T恤</p>
+                                        <p class="text-xs text-text-secondary">颜色：黑色 / 尺码：XL</p>
+                                        <p class="text-xs text-text-secondary mt-1">SKU: TS20230501-BL-XL</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">¥199.00</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm">1</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <p class="text-sm font-medium text-error">¥199.00</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 处理记录区 -->
+                <div class="mb-8">
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">处理记录</h4>
+                    <div class="bg-white border border-border-color rounded-md p-6">
+                        <div class="timeline-item processing">
+                            <p class="text-sm font-medium">用户提交售后申请</p>
+                            <p class="text-xs text-text-secondary mt-1">2023-06-15 10:23:45</p>
+                            <p class="text-sm mt-2">申请类型：仅退款，金额：¥199.00</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 平台仲裁信息区 (根据状态显示) -->
+                <div id="platform-arbitration-section" class="mb-8 hidden">
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">平台仲裁信息</h4>
+                    <div class="bg-white border border-border-color rounded-md p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-xs text-text-secondary">介入原因</p>
+                                <p class="text-sm mt-1">商户拒绝售后，用户申请平台介入</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">介入时间</p>
+                                <p class="text-sm mt-1">2023-06-11 15:30:00</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">预计处理时间</p>
+                                <p class="text-sm text-warning mt-1">72小时内</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">仲裁状态</p>
+                                <p class="text-sm text-error mt-1">平台处理中</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-xs text-text-secondary">平台通知</p>
+                            <div class="bg-error-light/30 border border-error/20 rounded-md p-3 mt-1">
+                                <p class="text-sm text-error">请在24小时内上传相关凭证，逾期未上传将视为放弃举证权利，平台将根据现有信息进行判决。</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <p class="text-xs text-text-secondary">已上传凭证</p>
+                            <div class="flex flex-wrap gap-4 mt-2">
+                                <img src="https://picsum.photos/id/120/400/400" alt="凭证图片1" class="w-24 h-24 object-cover rounded-md cursor-pointer">
+                                <img src="https://picsum.photos/id/121/400/400" alt="凭证图片2" class="w-24 h-24 object-cover rounded-md cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 操作区 - 根据状态动态变化 -->
+                <div id="modal-actions">
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">操作</h4>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="btn btn-primary" onclick="showAuditModal('同意')">同意退款</button>
+                        <button class="btn btn-error" onclick="showAuditModal('拒绝')">拒绝售后</button>
+                        <button class="btn btn-outline" onclick="showAuditModal('协商')">协商处理</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 模态框底部 -->
+            <div class="px-6 py-4 border-t border-border-color flex justify-end">
+                <button class="btn btn-outline mr-3" onclick="closeDetailModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 审核模态框 -->
+    <div id="audit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-dropdown w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-border-color flex items-center justify-between">
+                <h3 class="text-lg font-medium" id="audit-modal-title">审核售后申请</h3>
+                <button class="text-text-secondary hover:text-error" onclick="closeAuditModal()">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="overflow-y-auto p-6">
+                <!-- 退款处理部分 -->
+                <div id="refund-processing-section" class="mb-6">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-text-secondary mb-2">
+                            退款方式
+                        </label>
+                        <div class="flex space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="refundType" value="full" class="form-radio h-4 w-4 text-primary" checked>
+                                <span class="ml-2 text-sm">全额退款</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="refundType" value="partial" class="form-radio h-4 w-4 text-primary">
+                                <span class="ml-2 text-sm">部分退款</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="partial-refund-amount-container" class="mb-4 hidden">
+                        <label for="partial-refund-amount" class="block text-sm font-medium text-text-secondary mb-2">
+                            部分退款金额
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-text-secondary">
+                                ¥
+                            </span>
+                            <input type="number" id="partial-refund-amount" value="0" step="0.01" min="0" max="199.00" 
+                                   class="form-input pl-8" placeholder="请输入退款金额">
+                            <p class="text-xs text-text-secondary mt-1">最大可退：¥199.00</p>
+                            <p id="amount-error" class="text-xs text-error mt-1 hidden">请输入有效的退款金额</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 自动全额退款倒计时 -->
+                    <div id="auto-refund-countdown" class="bg-warning-light border border-warning/30 rounded-md p-4 mb-4">
+                        <p class="text-sm text-warning flex items-start">
+                            <i class="fa fa-clock-o mt-0.5 mr-2"></i>
+                            <span>您有 <strong id="countdown-text">2天23小时59分钟</strong> 做出处理，逾期将自动全额退款</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 换货处理部分 -->
+                <div id="exchange-processing-section" class="mb-6 hidden">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-text-secondary mb-2">
+                            换货处理
+                        </label>
+                        <div class="flex space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="exchangeType" value="agree" class="form-radio h-4 w-4 text-primary" checked>
+                                <span class="ml-2 text-sm">同意换货</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="exchangeType" value="reject" class="form-radio h-4 w-4 text-primary">
+                                <span class="ml-2 text-sm">拒绝换货</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="reject-exchange-container" class="mb-4 hidden">
+                        <label for="reject-exchange-reason" class="block text-sm font-medium text-text-secondary mb-2">
+                            拒绝原因
+                        </label>
+                        <textarea id="reject-exchange-reason" rows="2" class="form-input" placeholder="请输入拒绝原因..."></textarea>
+                        
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-text-secondary mb-2">
+                                是否退款
+                            </label>
+                            <div class="flex space-x-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="exchangeRefundType" value="none" class="form-radio h-4 w-4 text-primary" checked>
+                                    <span class="ml-2 text-sm">不退款</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="exchangeRefundType" value="partial" class="form-radio h-4 w-4 text-primary">
+                                    <span class="ml-2 text-sm">部分退款</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="exchange-partial-refund-container" class="mt-4 hidden">
+                            <label for="exchange-partial-refund-amount" class="block text-sm font-medium text-text-secondary mb-2">
+                                部分退款金额
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-text-secondary">
+                                    ¥
+                                </span>
+                                <input type="number" id="exchange-partial-refund-amount" value="0" step="0.01" min="0" max="199.00" 
+                                       class="form-input pl-8" placeholder="请输入退款金额">
+                                <p class="text-xs text-text-secondary mt-1">最大可退：¥199.00</p>
+                                <p id="exchange-amount-error" class="text-xs text-error mt-1 hidden">请输入有效的退款金额</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 自动全额退款倒计时 -->
+                    <div id="exchange-auto-refund-countdown" class="bg-warning-light border border-warning/30 rounded-md p-4 mb-4">
+                        <p class="text-sm text-warning flex items-start">
+                            <i class="fa fa-clock-o mt-0.5 mr-2"></i>
+                            <span>您有 <strong id="exchange-countdown-text">2天23小时59分钟</strong> 做出处理，逾期将自动全额退款</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="audit-note" class="block text-sm font-medium text-text-secondary mb-2">
+                        备注说明
+                    </label>
+                    <textarea id="audit-note" rows="4" class="form-input" placeholder="请输入备注信息..."></textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-text-secondary mb-2">
+                        上传凭证（选填）
+                    </label>
+                    <div class="border-2 border-dashed border-border-color rounded-md p-8 text-center hover:border-primary transition-all duration-200 cursor-pointer">
+                        <i class="fa fa-cloud-upload text-3xl text-text-secondary mb-2"></i>
+                        <p class="text-sm text-text-secondary">点击或拖拽文件至此处上传</p>
+                        <p class="text-xs text-text-secondary mt-1">支持 JPG、PNG 格式，单文件不超过 5MB</p>
+                    </div>
+                </div>
+                
+                <!-- 平台仲裁申请部分 -->
+                <div id="arbitration-section" class="mb-6 hidden">
+                    <div class="bg-blue-light border border-primary/30 rounded-md p-4">
+                        <p class="text-sm text-primary mb-2">用户不同意部分退款方案</p>
+                        <button id="apply-arbitration-btn" class="btn btn-primary text-sm py-1.5 px-4">
+                            申请平台仲裁
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="cod-notice" class="bg-warning-light border border-warning/30 rounded-md p-4 mb-6">
+                    <p class="text-sm text-warning flex items-start">
+                        <i class="fa fa-exclamation-circle mt-0.5 mr-2"></i>
+                        <span>此订单为货到付款订单，退款需由您线下完成并上传退款凭证，用户确认收款后售后才可关闭。</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="px-6 py-4 border-t border-border-color flex justify-end">
+                <button class="btn btn-outline mr-3" onclick="closeAuditModal()">取消</button>
+                <button class="btn btn-primary" onclick="submitAudit()">确认提交</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 上传凭证模态框 -->
+    <div id="proof-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-dropdown w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-border-color flex items-center justify-between">
+                <h3 class="text-lg font-medium">上传退款凭证</h3>
+                <button class="text-text-secondary hover:text-error" onclick="closeProofModal()">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="overflow-y-auto p-6">
+                <div class="mb-6">
+                    <label for="transaction-id" class="block text-sm font-medium text-text-secondary mb-2">
+                        交易流水号
+                    </label>
+                    <input type="text" id="transaction-id" placeholder="请输入转账流水号" class="form-input">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-text-secondary mb-2">
+                        上传退款凭证
+                    </label>
+                    <div class="border-2 border-dashed border-border-color rounded-md p-8 text-center hover:border-primary transition-all duration-200 cursor-pointer">
+                        <i class="fa fa-cloud-upload text-3xl text-text-secondary mb-2"></i>
+                        <p class="text-sm text-text-secondary">点击或拖拽文件至此处上传</p>
+                        <p class="text-xs text-text-secondary mt-1">支持 JPG、PNG 格式，单文件不超过 5MB</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="refund-note" class="block text-sm font-medium text-text-secondary mb-2">
+                        备注说明
+                    </label>
+                    <textarea id="refund-note" rows="4" class="form-input" placeholder="请输入退款说明..."></textarea>
+                </div>
+                
+                <div class="bg-warning-light border border-warning/30 rounded-md p-4">
+                    <p class="text-sm text-warning flex items-start">
+                        <i class="fa fa-exclamation-circle mt-0.5 mr-2"></i>
+                        <span>上传凭证后，需等待用户确认收款。用户7天内未确认，系统将自动完成售后。</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="px-6 py-4 border-t border-border-color flex justify-end">
+                <button class="btn btn-outline mr-3" onclick="closeProofModal()">取消</button>
+                <button class="btn btn-primary" onclick="submitProof()">确认上传</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 平台仲裁凭证上传模态框 -->
+    <div id="arbitration-proof-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-dropdown w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-border-color flex items-center justify-between">
+                <h3 class="text-lg font-medium">上传平台仲裁凭证</h3>
+                <button class="text-text-secondary hover:text-error" onclick="closeArbitrationProofModal()">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="overflow-y-auto p-6">
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-text-secondary mb-2">
+                        问题描述
+                    </label>
+                    <textarea id="arbitration-description" rows="4" class="form-input" placeholder="请详细描述问题经过和您的立场..."></textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-text-secondary mb-2">
+                        上传凭证图片
+                    </label>
+                    <div class="border-2 border-dashed border-border-color rounded-md p-8 text-center hover:border-primary transition-all duration-200 cursor-pointer">
+                        <i class="fa fa-cloud-upload text-3xl text-text-secondary mb-2"></i>
+                        <p class="text-sm text-text-secondary">点击或拖拽文件至此处上传</p>
+                        <p class="text-xs text-text-secondary mt-1">支持 JPG、PNG 格式，最多上传5张，单文件不超过 5MB</p>
+                    </div>
+                    <p class="text-xs text-warning mt-2">
+                        <i class="fa fa-lightbulb-o mr-1"></i>
+                        提示：建议上传清晰的商品照片、聊天记录、物流凭证等，以便平台做出公正判决。
+                    </p>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-text-secondary mb-2">
+                        联系方式
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="arbitration-phone" class="block text-xs text-text-secondary mb-1">联系电话</label>
+                            <input type="tel" id="arbitration-phone" placeholder="请输入联系电话" class="form-input">
+                        </div>
+                        <div>
+                            <label for="arbitration-email" class="block text-xs text-text-secondary mb-1">电子邮箱</label>
+                            <input type="email" id="arbitration-email" placeholder="请输入电子邮箱" class="form-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-error-light/30 border border-error/20 rounded-md p-4">
+                    <p class="text-sm text-error flex items-start">
+                        <i class="fa fa-exclamation-circle mt-0.5 mr-2"></i>
+                        <span>请在规定时间内上传凭证，逾期未上传将视为放弃举证权利。平台将根据双方提供的凭证和规则进行公正判决。</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="px-6 py-4 border-t border-border-color flex justify-end">
+                <button class="btn btn-outline mr-3" onclick="closeArbitrationProofModal()">取消</button>
+                <button class="btn btn-primary" onclick="submitArbitrationProof()">确认上传</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 图表初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 售后趋势图表
+            var afterSalesCtx = document.getElementById('afterSalesChart').getContext('2d');
+            new Chart(afterSalesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                    datasets: [
+                        {
+                            label: '售后工单数量',
+                            data: [12, 19, 8, 15, 10, 7, 12],
+                            borderColor: '#1890ff',
+                            backgroundColor: 'rgba(24, 144, 255, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 售后类型分布图表
+              var afterSalesTypeCtx = document.getElementById('afterSalesTypeChart').getContext('2d');
+            new Chart(afterSalesTypeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['仅退款', '退货退款', '换货'],
+                    datasets: [{
+                        data: [42, 38, 20],
+                        backgroundColor: [
+                            '#1890ff',
+                            '#52c41a',
+                            '#faad14'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        });
+        
+        // 通知下拉菜单
+        document.getElementById('notification-btn').addEventListener('click', function() {
+            var dropdown = document.getElementById('notification-dropdown');
+            dropdown.classList.toggle('hidden');
+        });
+
+        // 点击页面其他地方关闭通知下拉菜单
+        document.addEventListener('click', function(event) {
+            var notificationBtn = document.getElementById('notification-btn');
+            var dropdown = document.getElementById('notification-dropdown');
+            
+            if (!notificationBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // 通知项点击事件
+        document.querySelectorAll('.notification-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 标记为已读
+                this.classList.remove('border-l-2', 'border-warning');
+                
+                // 检查是否所有通知都已读
+                var unreadNotifications = document.querySelectorAll('.notification-item.border-warning');
+                if (unreadNotifications.length === 0) {
+                    document.getElementById('notification-badge').textContent = '0';
+                }
+                
+                // 点击通知后可以跳转到相应的工单详情
+                if (this.textContent.includes('AS202306150001')) {
+                    openDetailModal('AS202306150001', '待审核');
+                }
+                
+                // 关闭通知下拉菜单
+                document.getElementById('notification-dropdown').classList.add('hidden');
+            });
+        });
+
+        // 模拟新的催办通知到达
+        function simulateNewReminder() {
+            // 创建新通知项
+            var notificationList = document.getElementById('notification-list');
+            var newNotification = document.createElement('div');
+            newNotification.className = 'px-4 py-3 hover:bg-gray-50 cursor-pointer border-l-2 border-warning notification-item';
+            newNotification.innerHTML = `
+                <div class="flex items-start">
+                    <i class="fa fa-exclamation-circle text-warning mt-0.5 mr-2"></i>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium">审核催办提醒</p>
+                        <p class="text-xs text-text-secondary mt-1">用户赵** 对工单 AS202306120004 发起了催办，请尽快处理</p>
+                        <p class="text-xs text-text-secondary mt-1">刚刚</p>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到列表顶部
+            notificationList.insertBefore(newNotification, notificationList.firstChild);
+            
+            // 更新通知数量
+            var badge = document.getElementById('notification-badge');
+            badge.textContent = parseInt(badge.textContent) + 1;
+            
+            // 添加点击事件
+            newNotification.addEventListener('click', function() {
+                this.classList.remove('border-l-2', 'border-warning');
+                
+                var unreadNotifications = document.querySelectorAll('.notification-item.border-warning');
+                if (unreadNotifications.length === 0) {
+                    badge.textContent = '0';
+                }
+                
+                openDetailModal('AS202306120004', '待退款');
+                document.getElementById('notification-dropdown').classList.add('hidden');
+            });
+            
+            // 显示通知动画提示
+            var notificationBtn = document.getElementById('notification-btn');
+            notificationBtn.classList.add('animate-pulse');
+            setTimeout(() => {
+                notificationBtn.classList.remove('animate-pulse');
+            }, 2000);
+        }
+
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            var sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            var navTexts = document.querySelectorAll('nav span');
+            navTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            var brandTitle = document.querySelector('h1');
+            brandTitle.classList.toggle('hidden');
+        });
+        
+        // 模态框操作
+        function openDetailModal(orderId, status, afterSaleType = '退货退款') {
+            document.getElementById('modal-title').textContent = `售后详情 - ${orderId}`;
+            document.getElementById('modal-after-sale-id').textContent = orderId;
+            document.getElementById('modal-status').textContent = status;
+            document.getElementById('detail-modal').classList.remove('hidden');
+            
+            // 设置当前售后类型
+            currentAfterSaleType = afterSaleType;
+            
+            // 根据状态控制平台仲裁信息区域的显示
+            var arbitrationSection = document.getElementById('platform-arbitration-section');
+            if (status === '平台介入中') {
+                arbitrationSection.classList.remove('hidden');
+                // 更新平台仲裁信息的时间限制
+                document.getElementById('modal-time-limit').textContent = '剩余 24小时';
+                document.getElementById('modal-time-limit').className = 'text-sm font-medium text-warning mt-1';
+            } else {
+                arbitrationSection.classList.add('hidden');
+            }
+            
+            // 根据状态更新操作区
+            var actionsContainer = document.getElementById('modal-actions');
+            let actionsHtml = '';
+            
+            if (status === '待审核') {
+                var primaryBtnText = afterSaleType === '换货' ? '同意换货' : '同意退款';
+                actionsHtml = `
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">操作</h4>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="btn btn-primary" onclick="showAuditModal('同意')">${primaryBtnText}</button>
+                        <button class="btn btn-error" onclick="showAuditModal('拒绝')">拒绝售后</button>
+                        <button class="btn btn-outline" onclick="showAuditModal('协商')">协商处理</button>
+                    </div>
+                `;
+            } else if (status === '待用户退货') {
+                actionsHtml = `
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">操作</h4>
+                    <div class="flex flex-wrap gap-4">
+                        <span class="text-text-secondary">仅支持查看</span>
+                    </div>
+                `;
+            } else if (status === '用户已寄回') {
+                // 根据售后类型决定显示的操作按钮
+                var hasNegotiationButton = afterSaleType === '退货退款';
+                actionsHtml = '<h4 class="text-sm font-medium text-text-secondary mb-4">操作</h4>'+
+                    '<div class="flex flex-wrap gap-4">'+
+                        '<button class="btn btn-success" onclick="confirmReceipt()">确认收货</button>'+
+                        (hasNegotiationButton ? 
+                            '<button class="btn btn-outline" onclick="showNegotiationModal()">协商处理</button>' : 
+                            '<button class="btn btn-error" onclick="rejectReceipt()">拒绝收货</button>'
+                        )+
+                    '</div>';
+
+            } else if (status === '待退款') {
+                actionsHtml = `
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">操作</h4>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="btn btn-primary" onclick="uploadRefundProof()">上传退款凭证</button>
+                    </div>
+                `;
+            } else if (status === '平台介入中') {
+                actionsHtml = `
+                    <h4 class="text-sm font-medium text-text-secondary mb-4">操作</h4>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="btn btn-primary" onclick="uploadArbitrationProof()">上传补充凭证</button>
+                        <button class="btn btn-outline" onclick="viewArbitrationHistory()">查看仲裁历史</button>
+                    </div>
+                `;
+            }
+            
+            actionsContainer.innerHTML = actionsHtml;
+        }
+        
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+        
+        function showNegotiationModal() {
+            var negotiationModal = document.getElementById('negotiation-modal');
+            if (negotiationModal) {
+                negotiationModal.classList.remove('hidden');
+            } else {
+                createNegotiationModal();
+            }
+        }
+        
+        function closeNegotiationModal() {
+            var negotiationModal = document.getElementById('negotiation-modal');
+            if (negotiationModal) {
+                negotiationModal.classList.add('hidden');
+            }
+        }
+        
+        function createNegotiationModal() {
+            var modalHTML = '<div id="negotiation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">';
+            modalHTML += '<div class="bg-white rounded-lg shadow-dropdown w-full max-w-md mx-4">';
+            modalHTML += '<div class="flex items-center justify-between px-6 py-4 border-b border-border-color">';
+            modalHTML += '<h3 class="text-lg font-medium">协商处理</h3>';
+            modalHTML += '<button class="text-text-secondary hover:text-text-secondary/80" onclick="closeNegotiationModal()">';
+            modalHTML += '<i class="fa fa-times"></i>';
+            modalHTML += '</button>';
+            modalHTML += '</div>';
+            modalHTML += '<div class="px-6 py-4">';
+            modalHTML += '<div class="mb-4">';
+            modalHTML += '<label class="block text-sm font-medium text-text-secondary mb-2">协商金额</label>';
+            modalHTML += '<input type="number" id="negotiation-amount" class="form-input" placeholder="请输入协商金额" min="0" step="0.01">';
+            modalHTML += '</div>';
+            modalHTML += '<div class="mb-4">';
+            modalHTML += '<label class="block text-sm font-medium text-text-secondary mb-2">上传凭证</label>';
+            modalHTML += '<div class="border-2 border-dashed border-border-color rounded-md p-4 text-center">';
+            modalHTML += '<input type="file" id="negotiation-proof" class="hidden">';
+            modalHTML += '<label for="negotiation-proof" class="cursor-pointer">';
+            modalHTML += '<i class="fa fa-cloud-upload text-2xl text-text-secondary mb-2"></i>';
+            modalHTML += '<p class="text-sm text-text-secondary">点击或拖拽文件至此处上传</p>';
+            modalHTML += '<p class="text-xs text-text-secondary mt-1">支持JPG、PNG格式，单个文件不超过5MB</p>';
+            modalHTML += '</label>';
+            modalHTML += '<div id="proof-preview" class="mt-3 hidden"></div>';
+            modalHTML += '</div>';
+            modalHTML += '</div>';
+            modalHTML += '<div class="mb-4">';
+            modalHTML += '<label class="block text-sm font-medium text-text-secondary mb-2">协商说明</label>';
+            modalHTML += '<textarea id="negotiation-description" class="form-input h-24" placeholder="请输入协商说明"></textarea>';
+            modalHTML += '</div>';
+            modalHTML += '</div>';
+            modalHTML += '<div class="flex justify-end px-6 py-4 border-t border-border-color gap-3">';
+            modalHTML += '<button class="btn btn-outline" onclick="closeNegotiationModal()">取消</button>';
+            modalHTML += '<button class="btn btn-primary" onclick="submitNegotiation()">确认提交</button>';
+            modalHTML += '</div>';
+            modalHTML += '</div>';
+            modalHTML += '</div>';
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            var fileInput = document.getElementById('negotiation-proof');
+            var previewContainer = document.getElementById('proof-preview');
+            
+            if (fileInput && previewContainer) {
+                fileInput.onchange = function() {
+                    if (this.files && this.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function() {
+                            var fileName = fileInput.files[0].name;
+                            var previewHTML = '<div class="flex items-center justify-between p-2 bg-gray-50 rounded">';
+                            previewHTML += '<div class="flex items-center">';
+                            previewHTML += '<i class="fa fa-file-image-o text-primary mr-2"></i>';
+                            previewHTML += '<span class="text-sm truncate max-w-xs">' + fileName + '</span>';
+                            previewHTML += '</div>';
+                            previewHTML += '<button class="text-error hover:text-error/80" onclick="removeProofPreview()">';
+                            previewHTML += '<i class="fa fa-times"></i>';
+                            previewHTML += '</button>';
+                            previewHTML += '</div>';
+                            previewContainer.innerHTML = previewHTML;
+                            previewContainer.classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                };
+            }
+        }
+        
+        function removeProofPreview() {
+            var fileInput = document.getElementById('negotiation-proof');
+            var previewContainer = document.getElementById('proof-preview');
+            if (fileInput && previewContainer) {
+                fileInput.value = '';
+                previewContainer.innerHTML = '';
+                previewContainer.classList.add('hidden');
+            }
+        }
+        
+        function submitNegotiation() {
+            var amount = document.getElementById('negotiation-amount').value;
+            var fileInput = document.getElementById('negotiation-proof');
+            if (!amount) {
+                alert('请输入协商金额');
+                return;
+            }
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('请上传协商处理凭证');
+                return;
+            }
+            alert('协商处理已提交，金额：¥' + amount);
+            closeNegotiationModal();
+            closeDetailModal();
+        }
+        
+        function showAuditModal(type) {
+            var title = document.getElementById('audit-modal-title');
+            var refundProcessingSection = document.getElementById('refund-processing-section');
+            var exchangeProcessingSection = document.getElementById('exchange-processing-section');
+            var arbitrationSection = document.getElementById('arbitration-section');
+            var rejectReasonSection = document.getElementById('reject-reason-section');
+            var negotiationSection = document.getElementById('negotiation-section');
+            
+            // 隐藏所有处理区域
+            if (refundProcessingSection) refundProcessingSection.style.display = 'none';
+            if (exchangeProcessingSection) exchangeProcessingSection.style.display = 'none';
+            if (rejectReasonSection) rejectReasonSection.style.display = 'none';
+            if (negotiationSection) negotiationSection.style.display = 'none';
+            if (arbitrationSection) arbitrationSection.style.display = 'none';
+            
+            // 设置模态框标题
+            var isExchange = currentAfterSaleType === '换货';
+            if (type === '同意') {
+                title.textContent = isExchange ? '同意换货' : '同意退款';
+                // 显示对应的处理区域
+                if (isExchange && exchangeProcessingSection) {
+                    exchangeProcessingSection.style.display = 'block';
+                    // 自动选择同意换货
+                    var agreeExchangeRadio = document.querySelector('input[name="exchangeType"][value="agree"]');
+                    if (agreeExchangeRadio) agreeExchangeRadio.checked = true;
+                    // 隐藏拒绝换货相关区域
+                    var rejectExchangeContainer = document.getElementById('reject-exchange-container');
+                    if (rejectExchangeContainer) rejectExchangeContainer.classList.add('hidden');
+                } else if (!isExchange && refundProcessingSection) {
+                    refundProcessingSection.style.display = 'block';
+                }
+            } else if (type === '拒绝') {
+                title.textContent = '拒绝售后';
+                // 显示拒绝原因区域
+                if (rejectReasonSection) rejectReasonSection.style.display = 'block';
+            } else if (type === '协商') {
+                title.textContent = '协商处理';
+                // 显示协商处理区域
+                if (negotiationSection) negotiationSection.style.display = 'block';
+            }
+            
+            // 初始化倒计时
+            initCountdown();
+            
+            document.getElementById('audit-modal').classList.remove('hidden');
+        }
+        
+        function closeAuditModal() {
+            document.getElementById('audit-modal').classList.add('hidden');
+            // 清除倒计时
+            if (countdownInterval) clearInterval(countdownInterval);
+        }
+        
+        // 当前售后类型（实际应该从数据中获取）
+        let currentAfterSaleType = '退货退款';
+        let countdownInterval;
+        // 当前订单信息（实际应该从API获取）
+        let currentOrderInfo = {
+            id: '',
+            status: '',
+            isCOD: false,
+            amount: 0
+        };
+        
+        // 初始化退款类型选择事件
+        function initRefundTypeSelection() {
+            var refundTypeRadios = document.querySelectorAll('input[name="refundType"]');
+            var partialRefundContainer = document.getElementById('partial-refund-amount-container');
+            
+            if (refundTypeRadios && partialRefundContainer) {
+                refundTypeRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        if (this.value === 'partial') {
+                            partialRefundContainer.classList.remove('hidden');
+                        } else {
+                            partialRefundContainer.classList.add('hidden');
+                            var errorElement = document.getElementById('amount-error');
+                            if (errorElement) errorElement.classList.add('hidden');
+                        }
+                    });
+                });
+            }
+        }
+        
+        // 初始化换货类型选择事件
+        function initExchangeTypeSelection() {
+            var exchangeTypeRadios = document.querySelectorAll('input[name="exchangeType"]');
+            var rejectExchangeContainer = document.getElementById('reject-exchange-container');
+            
+            if (exchangeTypeRadios && rejectExchangeContainer) {
+                exchangeTypeRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        if (this.value === 'reject') {
+                            rejectExchangeContainer.classList.remove('hidden');
+                        } else {
+                            rejectExchangeContainer.classList.add('hidden');
+                            var partialContainer = document.getElementById('exchange-partial-refund-container');
+                            var errorElement = document.getElementById('exchange-amount-error');
+                            if (partialContainer) partialContainer.classList.add('hidden');
+                            if (errorElement) errorElement.classList.add('hidden');
+                        }
+                    });
+                });
+            }
+            
+            // 初始化换货退款类型选择事件
+            var exchangeRefundTypeRadios = document.querySelectorAll('input[name="exchangeRefundType"]');
+            var exchangePartialRefundContainer = document.getElementById('exchange-partial-refund-container');
+            
+            if (exchangeRefundTypeRadios && exchangePartialRefundContainer) {
+                exchangeRefundTypeRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        if (this.value === 'partial') {
+                            exchangePartialRefundContainer.classList.remove('hidden');
+                        } else {
+                            exchangePartialRefundContainer.classList.add('hidden');
+                            const errorElement = document.getElementById('exchange-amount-error');
+                            if (errorElement) errorElement.classList.add('hidden');
+                        }
+                    });
+                });
+            }
+        }
+        
+        // 初始化金额验证
+        function initAmountValidation() {
+            const partialRefundAmount = document.getElementById('partial-refund-amount');
+            const exchangePartialRefundAmount = document.getElementById('exchange-partial-refund-amount');
+            const maxRefundAmount = 199.00; // 实际应该从数据中获取
+            
+            if (partialRefundAmount) {
+                partialRefundAmount.addEventListener('input', function() {
+                    validateAmount(this, maxRefundAmount, 'amount-error');
+                });
+            }
+            
+            if (exchangePartialRefundAmount) {
+                exchangePartialRefundAmount.addEventListener('input', function() {
+                    validateAmount(this, maxRefundAmount, 'exchange-amount-error');
+                });
+            }
+        }
+        
+        // 验证金额
+        function validateAmount(input, maxAmount, errorId) {
+            const value = parseFloat(input.value);
+            const errorElement = document.getElementById(errorId);
+            
+            if (!errorElement) return false;
+            
+            if (isNaN(value) || value <= 0 || value > maxAmount) {
+                errorElement.classList.remove('hidden');
+                return false;
+            } else {
+                errorElement.classList.add('hidden');
+                return true;
+            }
+        }
+        
+        // 初始化倒计时
+        function initCountdown() {
+            // 清除之前的倒计时
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            // 设置3天倒计时（实际应该从服务器获取剩余时间）
+            let remainingSeconds = 3 * 24 * 60 * 60;
+            
+            countdownInterval = setInterval(() => {
+                remainingSeconds--;
+                
+                if (remainingSeconds <= 0) {
+                    clearInterval(countdownInterval);
+                    // 触发自动全额退款
+                    autoFullRefund();
+                    return;
+                }
+                
+                // 计算天、时、分、秒
+                const days = Math.floor(remainingSeconds / (24 * 60 * 60));
+                const hours = Math.floor((remainingSeconds % (24 * 60 * 60)) / (60 * 60));
+                const minutes = Math.floor((remainingSeconds % (60 * 60)) / 60);
+                const seconds = remainingSeconds % 60;
+                
+                // 更新倒计时显示
+                const countdownText = document.getElementById('countdown-text');
+                const exchangeCountdownText = document.getElementById('exchange-countdown-text');
+                
+                const timeString = `${days}天${hours}小时${minutes}分钟${seconds}秒`;
+                
+                if (countdownText) countdownText.textContent = timeString;
+                if (exchangeCountdownText) exchangeCountdownText.textContent = timeString;
+            }, 1000);
+        }
+        
+        // 自动全额退款
+        function autoFullRefund() {
+            console.log('自动全额退款执行');
+            // 这里应该调用API执行自动全额退款
+            alert('由于超过处理时限，系统已自动为用户执行全额退款');
+            closeAuditModal();
+        }
+        
+        // 初始化平台仲裁申请
+        function initArbitrationRequest() {
+            const applyArbitrationBtn = document.getElementById('apply-arbitration-btn');
+            if (applyArbitrationBtn) {
+                applyArbitrationBtn.addEventListener('click', function() {
+                    // 显示平台仲裁凭证上传模态框
+                    showArbitrationProofModal();
+                });
+            }
+        }
+        
+        // 初始化拒绝原因输入验证
+        function initRejectReasonValidation() {
+            const rejectReason = document.getElementById('reject-reason');
+            const rejectReasonError = document.getElementById('reject-reason-error');
+            
+            if (rejectReason && rejectReasonError) {
+                rejectReason.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        rejectReasonError.classList.add('hidden');
+                    }
+                });
+            }
+        }
+        
+        // 初始化协商内容输入验证
+        function initNegotiationValidation() {
+            const negotiationContent = document.getElementById('negotiation-content');
+            const negotiationContentError = document.getElementById('negotiation-content-error');
+            
+            if (negotiationContent && negotiationContentError) {
+                negotiationContent.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        negotiationContentError.classList.add('hidden');
+                    }
+                });
+            }
+        }
+        
+        // 处理COD订单的特殊逻辑
+        function handleCODSpecialLogic() {
+            // 检查当前订单是否为COD订单
+            const isCODOrder = false; // 实际应该从订单数据中获取
+            
+            if (isCODOrder) {
+                // COD订单的特殊处理逻辑
+                console.log('处理COD订单特殊逻辑');
+                
+                // 例如：退款凭证上传时的特殊提示
+                const originalUploadProof = window.uploadRefundProof;
+                window.uploadRefundProof = function() {
+                    alert('COD订单退款需提供银行转账凭证，请确保包含完整的转账信息。');
+                    originalUploadProof();
+                };
+            }
+        }
+        
+        // 页面加载完成后初始化事件
+        document.addEventListener('DOMContentLoaded', function() {
+            initRefundTypeSelection();
+            initExchangeTypeSelection();
+            initAmountValidation();
+            initArbitrationRequest();
+            initRejectReasonValidation();
+            initNegotiationValidation();
+            handleCODSpecialLogic();
+        });
+        
+        function showAuditConfirm(type) {
+            if (confirm(`${type}此售后申请？`)) {
+                alert(`${type}成功！`);
+            }
+        }
+        
+        function submitAudit() {
+             var isExchange = currentAfterSaleType === '换货';
+            let isValid = true;
+            let actionType = '';
+            
+            // 获取当前操作类型
+            if (document.getElementById('audit-modal-title').textContent.includes('拒绝')) {
+                actionType = 'reject';
+                // 验证拒绝原因
+                const rejectReason = document.getElementById('reject-reason');
+                const rejectReasonError = document.getElementById('reject-reason-error');
+                
+                if (rejectReason && !rejectReason.value.trim()) {
+                    isValid = false;
+                    if (rejectReasonError) {
+                        rejectReasonError.classList.remove('hidden');
+                    }
+                } else if (rejectReasonError) {
+                    rejectReasonError.classList.add('hidden');
+                }
+            } else if (document.getElementById('audit-modal-title').textContent.includes('协商')) {
+                actionType = 'negotiate';
+                // 验证协商内容
+                const negotiationContent = document.getElementById('negotiation-content');
+                const negotiationContentError = document.getElementById('negotiation-content-error');
+                
+                if (negotiationContent && !negotiationContent.value.trim()) {
+                    isValid = false;
+                    if (negotiationContentError) {
+                        negotiationContentError.classList.remove('hidden');
+                    }
+                } else if (negotiationContentError) {
+                    negotiationContentError.classList.add('hidden');
+                }
+            } else {
+                actionType = 'approve';
+                // 验证退款金额（如果是部分退款）
+                if (!isExchange) {
+                    const selectedRefundType = document.querySelector('input[name="refundType"]:checked');
+                    if (selectedRefundType && selectedRefundType.value === 'partial') {
+                        isValid = validateAmount(
+                            document.getElementById('partial-refund-amount'), 
+                            199.00, 
+                            'amount-error'
+                        );
+                    }
+                } else {
+                    // 验证换货处理
+                    const selectedExchangeType = document.querySelector('input[name="exchangeType"]:checked');
+                    if (selectedExchangeType && selectedExchangeType.value === 'reject') {
+                        const selectedRefundType = document.querySelector('input[name="exchangeRefundType"]:checked');
+                        if (selectedRefundType && selectedRefundType.value === 'partial') {
+                            isValid = validateAmount(
+                                document.getElementById('exchange-partial-refund-amount'), 
+                                199.00, 
+                                'exchange-amount-error'
+                            );
+                        }
+                    }
+                }
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            // 根据操作类型进行处理
+            if (actionType === 'reject') {
+                console.log('提交拒绝审核，拒绝原因为：', document.getElementById('reject-reason').value);
+                alert('拒绝售后成功！');
+                // 跳转到售后关闭状态
+                // 实际项目中应该调用API更新状态
+            } else if (actionType === 'negotiate') {
+                console.log('提交协商处理，协商内容为：', document.getElementById('negotiation-content').value);
+                alert('协商处理提交成功！等待用户响应');
+                // 保持在当前状态，但可以添加协商记录
+            } else {
+                console.log('提交同意审核');
+                alert('审核提交成功！');
+                // 根据售后类型跳转到相应状态
+                // 退货退款 -> 待用户退货
+                // 仅退款 -> 待退款
+                // 换货 -> 待用户寄回（如果需要寄回）或直接处理
+            }
+            
+            closeAuditModal();
+            closeDetailModal();
+        }
+        
+        function uploadRefundProof() {
+            document.getElementById('proof-modal').classList.remove('hidden');
+        }
+        
+        function closeProofModal() {
+            document.getElementById('proof-modal').classList.add('hidden');
+        }
+        
+        function submitProof() {
+            alert('退款凭证上传成功！');
+            closeProofModal();
+            closeDetailModal();
+        }
+        
+        function modifyReturnAddress() {
+            // 函数保留但不执行任何操作
+            // 已从UI中移除相关按钮
+        }
+        
+        function confirmReceipt() {
+            if (confirm('确认已收到退货商品？')) {
+                alert('确认收货成功！等待平台操作退款');
+                closeDetailModal();
+            }
+        }
+        
+        function rejectReceipt() {
+            // 打开拒收凭证上传模态框
+            const rejectReason = prompt('请输入拒收原因：');
+            if (rejectReason && rejectReason.trim()) {
+                // 实际项目中应该打开一个模态框让用户上传凭证
+                alert('请上传拒收凭证，系统将自动提交给平台进行审核。');
+                // 跳转到平台介入中状态
+                console.log('拒绝收货，原因：', rejectReason);
+            }
+        }
+        
+        function uploadArbitrationProof() {
+            // 打开平台仲裁凭证上传模态框
+            document.getElementById('arbitration-proof-modal').classList.remove('hidden');
+        }
+        
+        function closeArbitrationProofModal() {
+            document.getElementById('arbitration-proof-modal').classList.add('hidden');
+        }
+        
+        function submitArbitrationProof() {
+            // 获取表单数据
+            const description = document.getElementById('arbitration-description').value;
+            const phone = document.getElementById('arbitration-phone').value;
+            const email = document.getElementById('arbitration-email').value;
+            
+            // 简单验证
+            if (!description) {
+                alert('请填写问题描述');
+                return;
+            }
+            
+            // 模拟提交
+            alert('仲裁凭证上传成功！平台将在72小时内完成处理。');
+            
+            // 关闭模态框
+            closeArbitrationProofModal();
+            closeDetailModal();
+        }
+        
+        function viewArbitrationHistory() {
+            // 查看仲裁历史记录
+            alert('查看仲裁历史记录功能将在下一版本实现。');
+        }
+        
+        // 页面加载3秒后模拟收到新的催办通知
+        setTimeout(simulateNewReminder, 3000);
+        
+        // 添加通知动画样式
+        var style = document.createElement('style');
+        style.textContent = "@keyframes pulse {\n            0%, 100% { opacity: 1; }\n            50% { opacity: 0.5; }\n        }\n        .animate-pulse {\n            animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;\n        }";
+        document.head.appendChild(style);
+    </script>
+    <!-- 售后工单交互逻辑 -->
+    <script src="aftersale-interactions.js"></script>
+</body>
+</html>

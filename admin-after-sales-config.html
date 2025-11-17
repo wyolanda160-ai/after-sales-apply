@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后配置管理 - 平台总后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#ff4d4f',
+                        info: '#8c8c8c',
+                        'primary-light': '#e6f7ff',
+                        'success-light': '#f6ffed',
+                        'warning-light': '#fff7e6',
+                        'error-light': '#fff1f0',
+                        'border-color': '#e8e8e8',
+                        'text-secondary': '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+                        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .hover-scale-105 {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale-105:hover {
+                transform: scale(1.05);
+            }
+            .active-nav-item {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .badge {
+                @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-success {
+                @apply bg-success text-white hover:bg-success/90;
+            }
+            .btn-warning {
+                @apply bg-warning text-white hover:bg-warning/90;
+            }
+            .btn-error {
+                @apply bg-error text-white hover:bg-error/90;
+            }
+            .btn-outline {
+                @apply border border-border-color text-text-secondary hover:bg-gray-50;
+            }
+            .form-input {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-select {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white;
+            }
+            .form-switch {
+                @apply relative inline-block w-10 h-6;
+            }
+            .form-switch input {
+                @apply opacity-0 w-0 h-0;
+            }
+            .form-switch .slider {
+                @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 transition-all duration-200 rounded-full;
+            }
+            .form-switch .slider:before {
+                @apply absolute content-[''] h-4 w-4 left-1 bottom-1 bg-white transition-all duration-200 rounded-full;
+            }
+            .form-switch input:checked + .slider {
+                @apply bg-primary;
+            }
+            .form-switch input:checked + .slider:before {
+                @apply transform translate-x-4;
+            }
+            .form-textarea {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary min-h-[100px] resize-y;
+            }
+            .form-checkbox {
+                @apply w-4 h-4 text-primary border-border-color rounded focus:ring-primary;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-card p-6;
+            }
+            .tab-item {
+                @apply py-3 px-4 text-sm font-medium cursor-pointer transition-all-300;
+            }
+            .tab-item.active {
+                @apply text-primary border-b-2 border-primary;
+            }
+            .form-group {
+                @apply mb-4;
+            }
+            .form-label {
+                @apply block text-sm font-medium text-text-secondary mb-1;
+            }
+            .form-help {
+                @apply text-xs text-text-secondary mt-1;
+            }
+            .config-item {
+                @apply p-4 border border-border-color rounded-lg mb-4 hover:border-primary/50 transition-all-300;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md flex flex-col overflow-y-auto">
+            <!-- 品牌标志 -->
+            <div class="h-16 flex items-center justify-center border-b border-border-color">
+                <h1 class="text-xl font-bold text-primary">平台总后台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 py-4">
+                <div class="px-4 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    系统概览
+                </div>
+                <a href="admin-dashboard.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-tachometer w-5 mr-3 text-center"></i>
+                    <span>数据看板</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    售后管理
+                </div>
+                <a href="admin-after-sales-list.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-list-alt w-5 mr-3 text-center"></i>
+                    <span>售后单管理</span>
+                </a>
+                <a href="admin-cod-refund.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-money w-5 mr-3 text-center"></i>
+                    <span>COD退款管理</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    配置管理
+                </div>
+                <a href="admin-after-sales-config.html" class="flex items-center px-4 py-3 active-nav-item transition-all-300">
+                    <i class="fa fa-cog w-5 mr-3 text-center"></i>
+                    <span>售后配置管理</span>
+                </a>
+                <a href="admin-after-sales-analysis.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-bar-chart w-5 mr-3 text-center"></i>
+                    <span>售后统计分析</span>
+                </a>
+                
+
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-border-color">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full" src="https://picsum.photos/id/1005/200/200" alt="管理员头像">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">张管理员</p>
+                        <p class="text-xs text-text-secondary">超级管理员</p>
+                    </div>
+                    <button class="ml-auto text-text-secondary hover:text-error">
+                        <i class="fa fa-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-text-secondary hover:text-primary mr-4">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <a href="admin-dashboard.html" class="text-text-secondary hover:text-primary text-sm mr-2">首页</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <span class="text-sm font-medium">售后配置管理</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-md text-sm border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-text-secondary hover:text-primary">
+                            <i class="fa fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-error text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">5</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="main-content">
+                <!-- 配置说明 -->
+                <div class="bg-primary-light border-l-4 border-primary p-4 rounded-md mb-6">
+                    <div class="flex items-start">
+                        <i class="fa fa-info-circle text-primary text-xl mt-0.5 mr-3"></i>
+                        <div>
+                            <h4 class="font-medium text-primary">配置说明</h4>
+                            <p class="text-sm text-text-secondary mt-1">
+                                售后配置管理用于设置平台的售后规则、退款政策和服务标准等。请谨慎修改配置项，确保规则公平合理，同时兼顾用户体验和平台运营成本。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 配置标签页 -->
+                <div class="card mb-6">
+                    <!-- 标签切换 -->
+                    <div class="flex border-b border-border-color">
+                        <div class="tab-item active" data-tab="basic-config">基础配置</div>
+                        <div class="tab-item" data-tab="refund-policy">退款政策</div>
+                        <div class="tab-item" data-tab="after-sales-rules">售后规则</div>
+                        <div class="tab-item" data-tab="service-standard">服务标准</div>
+                    </div>
+                    
+                    <!-- 基础配置 -->
+                    <div class="tab-content mt-4" id="basic-config">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 售后时效设置 -->
+                            <div class="config-item">
+                                <h4 class="font-medium mb-4">售后时效设置</h4>
+                                <div class="form-group">
+                                    <label class="form-label">申请售后时限（天）</label>
+                                    <input type="number" class="form-input" value="7" min="1" max="30">
+                                    <p class="form-help">用户可在收到商品后多少天内申请售后，默认为7天</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">商家响应时限（小时）</label>
+                                    <input type="number" class="form-input" value="24" min="1" max="120">
+                                    <p class="form-help">商家收到售后申请后必须在多少小时内响应，默认为24小时</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">平台介入时限（天）</label>
+                                    <input type="number" class="form-input" value="3" min="1" max="10">
+                                    <p class="form-help">商家超过响应时限后，用户可申请平台介入的天数，默认为3天</p>
+                                </div>
+                            </div>
+                            
+                            <!-- 通用设置 -->
+                            <div class="config-item">
+                                <h4 class="font-medium mb-4">通用设置</h4>
+                                <div class="form-group">
+                                    <label class="form-label">自动同意退款条件</label>
+                                    <div class="flex items-center justify-between p-3 border border-border-color rounded-md">
+                                        <div>
+                                            <span class="block text-sm font-medium">未发货订单自动同意退款</span>
+                                            <span class="text-xs text-text-secondary mt-1">当订单状态为未发货时，自动同意退款申请</span>
+                                        </div>
+                                        <label class="form-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 售后规则 -->
+                    <div class="tab-content mt-4 hidden" id="after-sales-rules">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 售后原因 -->
+                            <div class="config-item">
+                                <h4 class="font-medium mb-4">售后原因配置</h4>
+                                <div class="mb-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="form-label">仅退款原因</label>
+                                        <button class="text-primary text-sm hover:underline">管理</button>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">商品质量问题</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">商品与描述不符</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">未按约定时间发货</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">不想要了</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">重复下单</span>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="form-label">退货退款原因</label>
+                                        <button class="text-primary text-sm hover:underline">管理</button>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">商品破损</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">发错商品</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">商品质量问题</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">商品与描述不符</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">不想要了</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="form-label">换货原因</label>
+                                        <button class="text-primary text-sm hover:underline">管理</button>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">商品质量问题</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">尺寸不合适</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">颜色不符</span>
+                                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">商品破损</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 售后规则说明 -->
+                            <div class="config-item col-span-1 md:col-span-2">
+                                <h4 class="font-medium mb-4">售后规则说明</h4>
+                                <div class="form-group">
+                                    <label class="form-label">用户端售后规则展示</label>
+                                    <textarea class="form-textarea min-h-[200px]">
+# 售后服务规则
+
+## 售后申请时限
+- 普通商品：自签收之日起7天内可申请售后
+- 特殊商品（如电子产品）：自签收之日起15天内可申请售后
+- 定制商品：根据具体商品页面说明执行
+
+## 售后申请条件
+1. 商品保持全新未使用状态，不影响二次销售
+2. 商品包装完整，配件齐全
+3. 提供有效凭证（图片/视频）证明问题
+4. 部分特殊商品可能有特殊限制
+
+## 售后处理流程
+1. 用户提交售后申请及相关凭证
+2. 商家24小时内响应
+3. 商家确认或拒绝售后申请
+4. 如需退货，用户按指引寄回商品
+5. 商家收到退货并确认无误后退款
+
+## 退款规则
+- 未发货订单：全额退款
+- 已发货未签收：退款金额 = 商品金额 - 运费
+- 已签收商品：根据商品状态按比例退款
+
+## 不予受理的情况
+1. 超过售后申请时限的
+2. 商品已使用且影响二次销售的
+3. 因人为使用不当导致问题的
+4. 不可抗力因素导致的问题
+5. 提供虚假凭证的
+
+如有疑问，请联系客服热线：400-123-4567
+                                    </textarea>
+                                    <p class="form-help">用户在申请售后时看到的规则说明，支持Markdown格式</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 服务标准 -->
+                    <div class="tab-content mt-4 hidden" id="service-standard">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 响应时间标准 -->
+                            <div class="config-item">
+                                <h4 class="font-medium mb-4">响应时间标准</h4>
+                                <div class="form-group">
+                                    <label class="form-label">商家首响应时间（小时）</label>
+                                    <input type="number" class="form-input" value="6" min="1" max="48">
+                                    <p class="form-help">商家收到售后申请后首次响应的最长时间</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">平台客服响应时间（分钟）</label>
+                                    <input type="number" class="form-input" value="30" min="5" max="120">
+                                    <p class="form-help">平台客服对售后咨询的最长响应时间</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">退款处理时间（小时）</label>
+                                    <input type="number" class="form-input" value="24" min="1" max="72">
+                                    <p class="form-help">审核通过后到发起退款的最长时间</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">售后完成时间（天）</label>
+                                    <input type="number" class="form-input" value="7" min="1" max="30">
+                                    <p class="form-help">从申请到完成的最长时间</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 操作按钮 -->
+                    <div class="flex items-center justify-center space-x-4 mt-8">
+                        <button class="btn btn-outline">
+                            取消
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fa fa-save mr-1"></i> 保存配置
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fa fa-refresh mr-1"></i> 恢复默认
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            const navTexts = document.querySelectorAll('nav span');
+            navTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const navTitles = document.querySelectorAll('nav .text-xs');
+            navTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+        });
+        
+        // 标签页切换
+        const tabItems = document.querySelectorAll('.tab-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // 删除退款政策标签
+        const refundPolicyTab = document.querySelector('.tab-item[data-tab="refund-policy"]');
+        if (refundPolicyTab) {
+            refundPolicyTab.remove();
+        }
+        
+        tabItems.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有活跃状态
+                tabItems.forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // 隐藏所有内容
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // 添加当前活跃状态
+                this.classList.add('active');
+                
+                // 显示对应内容
+                const tabId = this.getAttribute('data-tab');
+                const content = document.getElementById(tabId);
+                if (content) {
+                    content.classList.remove('hidden');
+                }
+            });
+        });
+        
+        // 初始化第一个标签为活跃状态
+        if (tabItems.length > 0) {
+            tabItems[0].click();
+        }
+        
+        // 保存配置时的确认提示
+        const saveButton = document.querySelector('.btn-primary');
+        if (saveButton) {
+            saveButton.addEventListener('click', function() {
+                alert('配置保存成功！');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后统计分析 - 平台总后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#ff4d4f',
+                        info: '#8c8c8c',
+                        'primary-light': '#e6f7ff',
+                        'success-light': '#f6ffed',
+                        'warning-light': '#fff7e6',
+                        'error-light': '#fff1f0',
+                        'border-color': '#e8e8e8',
+                        'text-secondary': '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+                        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .hover-scale-105 {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale-105:hover {
+                transform: scale(1.05);
+            }
+            .active-nav-item {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .badge {
+                @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-success {
+                @apply bg-success text-white hover:bg-success/90;
+            }
+            .btn-warning {
+                @apply bg-warning text-white hover:bg-warning/90;
+            }
+            .btn-error {
+                @apply bg-error text-white hover:bg-error/90;
+            }
+            .btn-outline {
+                @apply border border-border-color text-text-secondary hover:bg-gray-50;
+            }
+            .form-input {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-select {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-card p-6;
+            }
+            .stats-card {
+                @apply bg-white rounded-lg shadow-card p-6 hover:shadow-lg transition-all-300;
+            }
+            .chart-container {
+                @apply w-full h-[350px];
+            }
+            .data-table {
+                @apply w-full min-w-[640px];
+            }
+            .data-table th {
+                @apply px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-secondary uppercase tracking-wider;
+            }
+            .data-table td {
+                @apply px-4 py-4 whitespace-nowrap text-sm border-t border-border-color;
+            }
+            .data-table tr:hover {
+                @apply bg-gray-50;
+            }
+            .filter-item {
+                @apply flex items-center justify-between p-3 border border-border-color rounded-md mb-3 hover:border-primary/50 transition-all-300;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md flex flex-col overflow-y-auto">
+            <!-- 品牌标志 -->
+            <div class="h-16 flex items-center justify-center border-b border-border-color">
+                <h1 class="text-xl font-bold text-primary">平台总后台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 py-4">
+                <div class="px-4 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    系统概览
+                </div>
+                <a href="admin-dashboard.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-tachometer w-5 mr-3 text-center"></i>
+                    <span>数据看板</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    售后管理
+                </div>
+                <a href="admin-after-sales-list.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-list-alt w-5 mr-3 text-center"></i>
+                    <span>售后单管理</span>
+                </a>
+                <a href="admin-cod-refund.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-money w-5 mr-3 text-center"></i>
+                    <span>COD退款管理</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    配置管理
+                </div>
+                <a href="admin-after-sales-config.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-cog w-5 mr-3 text-center"></i>
+                    <span>售后配置管理</span>
+                </a>
+                <a href="admin-after-sales-analysis.html" class="flex items-center px-4 py-3 active-nav-item transition-all-300">
+                    <i class="fa fa-bar-chart w-5 mr-3 text-center"></i>
+                    <span>售后统计分析</span>
+                </a>
+                
+
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-border-color">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full" src="https://picsum.photos/id/1005/200/200" alt="管理员头像">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">张管理员</p>
+                        <p class="text-xs text-text-secondary">超级管理员</p>
+                    </div>
+                    <button class="ml-auto text-text-secondary hover:text-error">
+                        <i class="fa fa-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-text-secondary hover:text-primary mr-4">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <a href="admin-dashboard.html" class="text-text-secondary hover:text-primary text-sm mr-2">首页</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <span class="text-sm font-medium">售后统计分析</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-md text-sm border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-text-secondary hover:text-primary">
+                            <i class="fa fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-error text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">5</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="main-content">
+                <!-- 统计概览 -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold">售后统计概览</h2>
+                        <div class="flex items-center space-x-2">
+                            <select class="form-select w-32">
+                                <option value="today" selected>今日</option>
+                                <option value="week">近7天</option>
+                                <option value="month">本月</option>
+                                <option value="quarter">近3月</option>
+                                <option value="year">本年</option>
+                                <option value="custom">自定义</option>
+                            </select>
+                            <div class="flex items-center space-x-1">
+                                <input type="date" class="form-input w-36 text-sm">
+                                <span class="text-text-secondary">至</span>
+                                <input type="date" class="form-input w-36 text-sm">
+                            </div>
+                            <button class="btn btn-primary">
+                                <i class="fa fa-refresh mr-1"></i> 刷新
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fa fa-download mr-1"></i> 导出
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 统计卡片 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="stats-card">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-text-secondary text-sm">总售后单数</p>
+                                    <h3 class="text-2xl font-bold mt-1">1,286</h3>
+                                    <div class="flex items-center mt-2 text-sm">
+                                        <span class="text-success"><i class="fa fa-arrow-up mr-1"></i>5.2%</span>
+                                        <span class="text-text-secondary ml-2">较上周</span>
+                                    </div>
+                                </div>
+                                <div class="w-12 h-12 bg-primary-light rounded-full flex items-center justify-center text-primary">
+                                    <i class="fa fa-ticket text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-card">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-text-secondary text-sm">处理完成率</p>
+                                    <h3 class="text-2xl font-bold mt-1">94.8%</h3>
+                                    <div class="flex items-center mt-2 text-sm">
+                                        <span class="text-success"><i class="fa fa-arrow-up mr-1"></i>2.3%</span>
+                                        <span class="text-text-secondary ml-2">较上周</span>
+                                    </div>
+                                </div>
+                                <div class="w-12 h-12 bg-success-light rounded-full flex items-center justify-center text-success">
+                                    <i class="fa fa-check-circle text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-card">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-text-secondary text-sm">平均处理时长</p>
+                                    <h3 class="text-2xl font-bold mt-1">12.5h</h3>
+                                    <div class="flex items-center mt-2 text-sm">
+                                        <span class="text-error"><i class="fa fa-arrow-up mr-1"></i>0.8h</span>
+                                        <span class="text-text-secondary ml-2">较上周</span>
+                                    </div>
+                                </div>
+                                <div class="w-12 h-12 bg-warning-light rounded-full flex items-center justify-center text-warning">
+                                    <i class="fa fa-clock-o text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-card">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-text-secondary text-sm">用户满意度</p>
+                                    <h3 class="text-2xl font-bold mt-1">4.7/5.0</h3>
+                                    <div class="flex items-center mt-2 text-sm">
+                                        <span class="text-success"><i class="fa fa-arrow-up mr-1"></i>0.1</span>
+                                        <span class="text-text-secondary ml-2">较上周</span>
+                                    </div>
+                                </div>
+                                <div class="w-12 h-12 bg-error-light rounded-full flex items-center justify-center text-error">
+                                    <i class="fa fa-star text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 趋势图表 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- 售后工单趋势 -->
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium">售后工单趋势</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-2 py-1 text-sm rounded bg-primary text-white">周</button>
+                                <button class="px-2 py-1 text-sm rounded text-text-secondary hover:bg-gray-100">月</button>
+                                <button class="px-2 py-1 text-sm rounded text-text-secondary hover:bg-gray-100">季</button>
+                                <button class="px-2 py-1 text-sm rounded text-text-secondary hover:bg-gray-100">年</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 售后类型分布 -->
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium">售后类型分布</h3>
+                            <button class="text-primary text-sm hover:underline">查看详情</button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="typeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 详细分析 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- 售后原因分析 -->
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium">售后原因分析</h3>
+                            <select class="form-select w-36">
+                                <option value="all" selected>全部类型</option>
+                                <option value="refund">仅退款</option>
+                                <option value="return_refund">退货退款</option>
+                                <option value="exchange">换货</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="reasonChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 用户满意度分析 -->
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium">用户满意度分析</h3>
+                            <button class="text-primary text-sm hover:underline">满意度报告</button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="satisfactionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商户售后表现 -->
+                <div class="card mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-medium">商户售后表现排行</h3>
+                        <div class="flex items-center space-x-2">
+                            <select class="form-select w-40">
+                                <option value="complete_rate" selected>按完成率</option>
+                                <option value="process_time">按处理时长</option>
+                                <option value="satisfaction">按满意度</option>
+                                <option value="ticket_count">按工单数量</option>
+                            </select>
+                            <select class="form-select w-24">
+                                <option value="desc" selected>降序</option>
+                                <option value="asc">升序</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>商户名称</th>
+                                    <th>总工单量</th>
+                                    <th>完成率</th>
+                                    <th>平均处理时长</th>
+                                    <th>用户满意度</th>
+                                    <th>售后率</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-medium">1</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/101/40/40" alt="商户头像" class="w-6 h-6 rounded-full mr-2">
+                                        <span>优衣库官方旗舰店</span>
+                                    </td>
+                                    <td>145</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <span class="text-success font-medium mr-2">99.3%</span>
+                                            <span class="text-success text-xs"><i class="fa fa-arrow-up"></i>1.2%</span>
+                                        </div>
+                                    </td>
+                                    <td>6.8h</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <div class="flex text-warning">
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star-half-o"></i>
+                                            </div>
+                                            <span class="ml-1 text-sm">4.8</span>
+                                        </div>
+                                    </td>
+                                    <td>3.2%</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline mr-2">详情</button>
+                                        <button class="text-warning text-sm hover:underline">提醒</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">2</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/102/40/40" alt="商户头像" class="w-6 h-6 rounded-full mr-2">
+                                        <span>小米官方旗舰店</span>
+                                    </td>
+                                    <td>238</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <span class="text-success font-medium mr-2">98.7%</span>
+                                            <span class="text-success text-xs"><i class="fa fa-arrow-up"></i>0.8%</span>
+                                        </div>
+                                    </td>
+                                    <td>8.2h</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <div class="flex text-warning">
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star-o"></i>
+                                            </div>
+                                            <span class="ml-1 text-sm">4.0</span>
+                                        </div>
+                                    </td>
+                                    <td>4.5%</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline mr-2">详情</button>
+                                        <button class="text-warning text-sm hover:underline">提醒</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">3</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/103/40/40" alt="商户头像" class="w-6 h-6 rounded-full mr-2">
+                                        <span>耐克官方旗舰店</span>
+                                    </td>
+                                    <td>186</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <span class="text-success font-medium mr-2">97.9%</span>
+                                            <span class="text-error text-xs"><i class="fa fa-arrow-down"></i>0.5%</span>
+                                        </div>
+                                    </td>
+                                    <td>9.5h</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <div class="flex text-warning">
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star-half-o"></i>
+                                            </div>
+                                            <span class="ml-1 text-sm">4.7</span>
+                                        </div>
+                                    </td>
+                                    <td>3.8%</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline mr-2">详情</button>
+                                        <button class="text-warning text-sm hover:underline">提醒</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">4</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/104/40/40" alt="商户头像" class="w-6 h-6 rounded-full mr-2">
+                                        <span>Apple官方旗舰店</span>
+                                    </td>
+                                    <td>152</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <span class="text-success font-medium mr-2">97.4%</span>
+                                            <span class="text-success text-xs"><i class="fa fa-arrow-up"></i>0.3%</span>
+                                        </div>
+                                    </td>
+                                    <td>10.2h</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <div class="flex text-warning">
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                            </div>
+                                            <span class="ml-1 text-sm">5.0</span>
+                                        </div>
+                                    </td>
+                                    <td>2.1%</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline mr-2">详情</button>
+                                        <button class="text-warning text-sm hover:underline">提醒</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">5</td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/105/40/40" alt="商户头像" class="w-6 h-6 rounded-full mr-2">
+                                        <span>华为官方旗舰店</span>
+                                    </td>
+                                    <td>209</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <span class="text-success font-medium mr-2">96.2%</span>
+                                            <span class="text-success text-xs"><i class="fa fa-arrow-up"></i>1.5%</span>
+                                        </div>
+                                    </td>
+                                    <td>11.3h</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <div class="flex text-warning">
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star-o"></i>
+                                            </div>
+                                            <span class="ml-1 text-sm">4.2</span>
+                                        </div>
+                                    </td>
+                                    <td>4.3%</td>
+                                    <td>
+                                        <button class="text-primary text-sm hover:underline mr-2">详情</button>
+                                        <button class="text-warning text-sm hover:underline">提醒</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex items-center justify-between mt-4">
+                        <div class="text-sm text-text-secondary">
+                            显示 1-5 条，共 48 条
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:border-primary hover:text-primary disabled:opacity-50 disabled:pointer-events-none" disabled>
+                                <i class="fa fa-angle-left"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white">1</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">2</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">3</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">4</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">5</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:border-primary hover:text-primary">
+                                <i class="fa fa-angle-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 问题分析 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 热点问题分析 -->
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium">热点问题分析</h3>
+                            <select class="form-select w-36">
+                                <option value="week" selected>近7天</option>
+                                <option value="month">本月</option>
+                                <option value="quarter">近3月</option>
+                            </select>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="filter-item">
+                                <div>
+                                    <div class="flex items-center">
+                                        <span class="inline-block w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs font-medium mr-2">1</span>
+                                        <span class="font-medium">商品质量问题</span>
+                                    </div>
+                                    <div class="flex items-center mt-2">
+                                        <div class="w-64 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm text-text-secondary">186单 (24.5%)</span>
+                                    </div>
+                                </div>
+                                <button class="text-primary text-sm hover:underline">查看</button>
+                            </div>
+                            <div class="filter-item">
+                                <div>
+                                    <div class="flex items-center">
+                                        <span class="inline-block w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs font-medium mr-2">2</span>
+                                        <span class="font-medium">商品与描述不符</span>
+                                    </div>
+                                    <div class="flex items-center mt-2">
+                                        <div class="w-64 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-primary h-2 rounded-full" style="width: 68%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm text-text-secondary">152单 (20.0%)</span>
+                                    </div>
+                                </div>
+                                <button class="text-primary text-sm hover:underline">查看</button>
+                            </div>
+                            <div class="filter-item">
+                                <div>
+                                    <div class="flex items-center">
+                                        <span class="inline-block w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs font-medium mr-2">3</span>
+                                        <span class="font-medium">商品破损</span>
+                                    </div>
+                                    <div class="flex items-center mt-2">
+                                        <div class="w-64 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-primary h-2 rounded-full" style="width: 52%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm text-text-secondary">128单 (16.8%)</span>
+                                    </div>
+                                </div>
+                                <button class="text-primary text-sm hover:underline">查看</button>
+                            </div>
+                            <div class="filter-item">
+                                <div>
+                                    <div class="flex items-center">
+                                        <span class="inline-block w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs font-medium mr-2">4</span>
+                                        <span class="font-medium">发错商品/规格</span>
+                                    </div>
+                                    <div class="flex items-center mt-2">
+                                        <div class="w-64 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-primary h-2 rounded-full" style="width: 45%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm text-text-secondary">108单 (14.2%)</span>
+                                    </div>
+                                </div>
+                                <button class="text-primary text-sm hover:underline">查看</button>
+                            </div>
+                            <div class="filter-item">
+                                <div>
+                                    <div class="flex items-center">
+                                        <span class="inline-block w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs font-medium mr-2">5</span>
+                                    </div>
+                                    <div class="flex items-center mt-2">
+                                        <div class="w-64 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-primary h-2 rounded-full" style="width: 32%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm text-text-secondary">78单 (10.3%)</span>
+                                    </div>
+                                </div>
+                                <button class="text-primary text-sm hover:underline">查看</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 客服绩效分析 -->
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium">客服绩效分析</h3>
+                            <select class="form-select w-36">
+                                <option value="week" selected>本周</option>
+                                <option value="month">本月</option>
+                                <option value="quarter">本季度</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div class="p-3 border border-border-color rounded-md">
+                                <p class="text-text-secondary text-sm">平均响应时间</p>
+                                <p class="text-xl font-bold mt-1">8.2分钟</p>
+                                <span class="text-success text-xs"><i class="fa fa-arrow-down"></i>12.5% 较上周</span>
+                            </div>
+                            <div class="p-3 border border-border-color rounded-md">
+                                <p class="text-text-secondary text-sm">一次性解决率</p>
+                                <p class="text-xl font-bold mt-1">92.3%</p>
+                                <span class="text-success text-xs"><i class="fa fa-arrow-up"></i>3.7% 较上周</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            const navTexts = document.querySelectorAll('nav span');
+            navTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const navTitles = document.querySelectorAll('nav .text-xs');
+            navTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+        });
+        
+        // 图表配置
+        const chartColors = {
+            primary: '#1890ff',
+            success: '#52c41a',
+            warning: '#faad14',
+            error: '#ff4d4f',
+            info: '#8c8c8c'
+        };
+        
+        // 售后工单趋势图
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                datasets: [
+                    {
+                        label: '新增工单',
+                        data: [125, 148, 132, 156, 142, 89, 96],
+                        borderColor: chartColors.primary,
+                        backgroundColor: `${chartColors.primary}20`,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: '已完成工单',
+                        data: [118, 135, 128, 145, 138, 82, 90],
+                        borderColor: chartColors.success,
+                        backgroundColor: `${chartColors.success}20`,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: '待处理工单',
+                        data: [25, 32, 28, 35, 30, 15, 18],
+                        borderColor: chartColors.warning,
+                        backgroundColor: `${chartColors.warning}20`,
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 售后类型分布图
+        const typeCtx = document.getElementById('typeChart').getContext('2d');
+        new Chart(typeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['仅退款', '退货退款', '换货', '维修', '其他'],
+                datasets: [{
+                    data: [35, 42, 15, 5, 3],
+                    backgroundColor: [
+                        chartColors.primary,
+                        chartColors.success,
+                        chartColors.warning,
+                        chartColors.error,
+                        chartColors.info
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+        
+        // 售后原因分析图
+        const reasonCtx = document.getElementById('reasonChart').getContext('2d');
+        new Chart(reasonCtx, {
+            type: 'bar',
+            data: {
+                labels: ['商品质量', '描述不符', '商品破损', '发错商品', '尺寸不合适', '不想要了', '其他'],
+                datasets: [{
+                    label: '工单数量',
+                    data: [186, 152, 128, 108, 86, 72, 48],
+                    backgroundColor: chartColors.primary,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 用户满意度分析图
+        const satisfactionCtx = document.getElementById('satisfactionChart').getContext('2d');
+        new Chart(satisfactionCtx, {
+            type: 'radar',
+            data: {
+                labels: ['服务态度', '响应速度', '解决效果', '沟通质量', '处理效率', '专业性'],
+                datasets: [
+                    {
+                        label: '本月',
+                        data: [4.8, 4.6, 4.7, 4.9, 4.5, 4.8],
+                        borderColor: chartColors.primary,
+                        backgroundColor: `${chartColors.primary}30`,
+                        borderWidth: 2,
+                        pointBackgroundColor: chartColors.primary
+                    },
+                    {
+                        label: '上月',
+                        data: [4.5, 4.3, 4.6, 4.7, 4.2, 4.6],
+                        borderColor: chartColors.info,
+                        backgroundColor: `${chartColors.info}30`,
+                        borderWidth: 2,
+                        pointBackgroundColor: chartColors.info
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 客服绩效分析图
+        const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(performanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['客服A', '客服B', '客服C', '客服D', '客服E'],
+                datasets: [
+                    {
+                        label: '处理工单量',
+                        data: [125, 118, 132, 105, 98],
+                        backgroundColor: chartColors.primary,
+                        borderRadius: 4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '满意度',
+                        data: [4.8, 4.7, 4.9, 4.6, 4.5],
+                        backgroundColor: chartColors.success,
+                        borderRadius: 4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        beginAtZero: true,
+                        max: 5,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 导出功能模拟
+        document.querySelector('.btn-outline i.fa-download').closest('button').addEventListener('click', function() {
+            alert('数据导出成功！');
+        });
+        
+        // 详情按钮点击事件
+        document.querySelectorAll('.text-primary.text-sm.hover\:underline').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('查看详情功能开发中...');
+            });
+        });
+        
+        // 提醒按钮点击事件
+        document.querySelectorAll('.text-warning.text-sm.hover\:underline').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('已发送提醒通知给商户！');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 - 平台总后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1890ff',
+                        success: '#52c41a',
+                        warning: '#faad14',
+                        error: '#ff4d4f',
+                        info: '#8c8c8c',
+                        'primary-light': '#e6f7ff',
+                        'success-light': '#f6ffed',
+                        'warning-light': '#fff7e6',
+                        'error-light': '#fff1f0',
+                        'border-color': '#e8e8e8',
+                        'text-secondary': '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+                        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)',
+                        'modal': '0 4px 24px rgba(0, 0, 0, 0.15)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .hover-scale-105 {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale-105:hover {
+                transform: scale(1.05);
+            }
+            .active-nav-item {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .badge {
+                @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .btn-success {
+                @apply bg-success text-white hover:bg-success/90;
+            }
+            .btn-warning {
+                @apply bg-warning text-white hover:bg-warning/90;
+            }
+            .btn-error {
+                @apply bg-error text-white hover:bg-error/90;
+            }
+            .btn-outline {
+                @apply border border-border-color text-text-secondary hover:bg-gray-50;
+            }
+            .form-input {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-select {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white;
+            }
+            .form-checkbox {
+                @apply w-4 h-4 text-primary border-border-color rounded focus:ring-primary;
+            }
+            .form-radio {
+                @apply w-4 h-4 text-primary border-border-color focus:ring-primary;
+            }
+            .form-textarea {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary min-h-[100px] resize-y;
+            }
+            .form-switch {
+                @apply relative inline-block w-10 h-6;
+            }
+            .form-switch input {
+                @apply opacity-0 w-0 h-0;
+            }
+            .form-switch .slider {
+                @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 transition-all duration-200 rounded-full;
+            }
+            .form-switch .slider:before {
+                @apply absolute content-[''] h-4 w-4 left-1 bottom-1 bg-white transition-all duration-200 rounded-full;
+            }
+            .form-switch input:checked + .slider {
+                @apply bg-primary;
+            }
+            .form-switch input:checked + .slider:before {
+                @apply transform translate-x-4;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-card p-6;
+            }
+            .data-table {
+                @apply w-full min-w-[800px];
+            }
+            .data-table th {
+                @apply px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-secondary uppercase tracking-wider;
+            }
+            .data-table td {
+                @apply px-4 py-4 whitespace-nowrap text-sm border-t border-border-color;
+            }
+            .data-table tr:hover {
+                @apply bg-gray-50;
+            }
+            .modal-backdrop {
+                @apply fixed inset-0 bg-black/50 z-50 flex items-center justify-center;
+            }
+            .modal-content {
+                @apply bg-white rounded-lg shadow-modal w-full max-w-2xl max-h-[90vh] overflow-y-auto;
+            }
+            .form-group {
+                @apply mb-4;
+            }
+            .form-label {
+                @apply block text-sm font-medium text-text-secondary mb-1;
+            }
+            .form-help {
+                @apply text-xs text-text-secondary mt-1;
+            }
+            .user-card {
+                @apply p-4 border border-border-color rounded-lg hover:border-primary/50 transition-all-300;
+            }
+            .user-avatar {
+                @apply w-12 h-12 rounded-full object-cover;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md flex flex-col overflow-y-auto">
+            <!-- 品牌标志 -->
+            <div class="h-16 flex items-center justify-center border-b border-border-color">
+                <h1 class="text-xl font-bold text-primary">平台总后台</h1>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 py-4">
+                <div class="px-4 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    系统概览
+                </div>
+                <a href="admin-dashboard.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-tachometer w-5 mr-3 text-center"></i>
+                    <span>数据看板</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    售后管理
+                </div>
+                <a href="admin-after-sales-list.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-list-alt w-5 mr-3 text-center"></i>
+                    <span>售后单管理</span>
+                </a>
+                <a href="admin-cod-refund.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-money w-5 mr-3 text-center"></i>
+                    <span>COD退款管理</span>
+                </a>
+                
+                <div class="px-4 mt-6 mb-2 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                    配置管理
+                </div>
+                <a href="admin-after-sales-config.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-cog w-5 mr-3 text-center"></i>
+                    <span>售后配置管理</span>
+                </a>
+                <a href="admin-after-sales-analysis.html" class="flex items-center px-4 py-3 text-text-secondary hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-bar-chart w-5 mr-3 text-center"></i>
+                    <span>售后统计分析</span>
+                </a>
+                
+
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-border-color">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full" src="https://picsum.photos/id/1005/200/200" alt="管理员头像">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">张管理员</p>
+                        <p class="text-xs text-text-secondary">超级管理员</p>
+                    </div>
+                    <button class="ml-auto text-text-secondary hover:text-error">
+                        <i class="fa fa-sign-out"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-text-secondary hover:text-primary mr-4">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <a href="admin-dashboard.html" class="text-text-secondary hover:text-primary text-sm mr-2">首页</a>
+                        <i class="fa fa-angle-right text-xs text-text-secondary mr-2"></i>
+                        <span class="text-sm font-medium">用户管理</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-md text-sm border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-text-secondary hover:text-primary">
+                            <i class="fa fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-error text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">5</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="main-content">
+                <!-- 功能按钮区 -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold">管理员账户管理</h2>
+                    <div class="flex items-center space-x-3">
+                        <button class="btn btn-outline">
+                            <i class="fa fa-refresh mr-1"></i> 刷新
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fa fa-download mr-1"></i> 导出
+                        </button>
+                        <button class="btn btn-primary" id="add-user-btn">
+                            <i class="fa fa-plus mr-1"></i> 添加管理员
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 筛选搜索区 -->
+                <div class="card mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="form-group">
+                            <label class="form-label">用户名</label>
+                            <input type="text" class="form-input" placeholder="请输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">姓名</label>
+                            <input type="text" class="form-input" placeholder="请输入姓名">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">角色</label>
+                            <select class="form-select">
+                                <option value="" selected>全部角色</option>
+                                <option value="super">超级管理员</option>
+                                <option value="admin">管理员</option>
+                                <option value="customer_service">客服专员</option>
+                                <option value="financial">财务专员</option>
+                                <option value="operation">运营专员</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">状态</label>
+                            <select class="form-select">
+                                <option value="" selected>全部状态</option>
+                                <option value="active">启用</option>
+                                <option value="inactive">禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end space-x-3 mt-4">
+                        <button class="btn btn-outline">
+                            重置
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fa fa-search mr-1"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 用户列表 -->
+                <div class="card">
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="w-10">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </th>
+                                    <th>用户信息</th>
+                                    <th>角色</th>
+                                    <th>部门</th>
+                                    <th>状态</th>
+                                    <th>最后登录时间</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-checkbox">
+                                    </td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1001/200/200" alt="用户头像" class="user-avatar mr-3">
+                                        <div>
+                                            <div class="font-medium">admin</div>
+                                            <div class="text-xs text-text-secondary">张管理员</div>
+                                            <div class="text-xs text-text-secondary">13800138000</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-light text-primary">超级管理员</span>
+                                    </td>
+                                    <td>技术部</td>
+                                    <td>
+                                        <span class="badge bg-success-light text-success">启用</span>
+                                    </td>
+                                    <td>2023-06-15 14:30:25</td>
+                                    <td>2022-01-10 09:15:30</td>
+                                    <td class="flex items-center space-x-2">
+                                        <button class="text-primary text-sm hover:underline" onclick="showUserDetail(1)">
+                                            详情
+                                        </button>
+                                        <button class="text-primary text-sm hover:underline" onclick="editUser(1)">
+                                            编辑
+                                        </button>
+                                        <button class="text-error text-sm hover:underline" disabled>
+                                            删除
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-checkbox">
+                                    </td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1002/200/200" alt="用户头像" class="user-avatar mr-3">
+                                        <div>
+                                            <div class="font-medium">manager01</div>
+                                            <div class="text-xs text-text-secondary">李经理</div>
+                                            <div class="text-xs text-text-secondary">13800138001</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-light text-primary">管理员</span>
+                                    </td>
+                                    <td>运营部</td>
+                                    <td>
+                                        <span class="badge bg-success-light text-success">启用</span>
+                                    </td>
+                                    <td>2023-06-15 13:45:12</td>
+                                    <td>2022-03-15 10:20:45</td>
+                                    <td class="flex items-center space-x-2">
+                                        <button class="text-primary text-sm hover:underline" onclick="showUserDetail(2)">
+                                            详情
+                                        </button>
+                                        <button class="text-primary text-sm hover:underline" onclick="editUser(2)">
+                                            编辑
+                                        </button>
+                                        <button class="text-error text-sm hover:underline" onclick="deleteUser(2)">
+                                            删除
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-checkbox">
+                                    </td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1003/200/200" alt="用户头像" class="user-avatar mr-3">
+                                        <div>
+                                            <div class="font-medium">cs001</div>
+                                            <div class="text-xs text-text-secondary">王客服</div>
+                                            <div class="text-xs text-text-secondary">13800138002</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning-light text-warning">客服专员</span>
+                                    </td>
+                                    <td>客服部</td>
+                                    <td>
+                                        <span class="badge bg-success-light text-success">启用</span>
+                                    </td>
+                                    <td>2023-06-15 11:20:38</td>
+                                    <td>2022-05-20 14:30:15</td>
+                                    <td class="flex items-center space-x-2">
+                                        <button class="text-primary text-sm hover:underline" onclick="showUserDetail(3)">
+                                            详情
+                                        </button>
+                                        <button class="text-primary text-sm hover:underline" onclick="editUser(3)">
+                                            编辑
+                                        </button>
+                                        <button class="text-error text-sm hover:underline" onclick="deleteUser(3)">
+                                            删除
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-checkbox">
+                                    </td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1004/200/200" alt="用户头像" class="user-avatar mr-3">
+                                        <div>
+                                            <div class="font-medium">finance01</div>
+                                            <div class="text-xs text-text-secondary">赵财务</div>
+                                            <div class="text-xs text-text-secondary">13800138003</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success-light text-success">财务专员</span>
+                                    </td>
+                                    <td>财务部</td>
+                                    <td>
+                                        <span class="badge bg-success-light text-success">启用</span>
+                                    </td>
+                                    <td>2023-06-14 16:50:42</td>
+                                    <td>2022-07-05 11:10:22</td>
+                                    <td class="flex items-center space-x-2">
+                                        <button class="text-primary text-sm hover:underline" onclick="showUserDetail(4)">
+                                            详情
+                                        </button>
+                                        <button class="text-primary text-sm hover:underline" onclick="editUser(4)">
+                                            编辑
+                                        </button>
+                                        <button class="text-error text-sm hover:underline" onclick="deleteUser(4)">
+                                            删除
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-checkbox">
+                                    </td>
+                                    <td class="flex items-center">
+                                        <img src="https://picsum.photos/id/1005/200/200" alt="用户头像" class="user-avatar mr-3">
+                                        <div>
+                                            <div class="font-medium">op001</div>
+                                            <div class="text-xs text-text-secondary">陈运营</div>
+                                            <div class="text-xs text-text-secondary">13800138004</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info text-white">运营专员</span>
+                                    </td>
+                                    <td>运营部</td>
+                                    <td>
+                                        <span class="badge bg-gray-200 text-text-secondary">禁用</span>
+                                    </td>
+                                    <td>2023-06-10 09:30:15</td>
+                                    <td>2022-09-12 15:20:30</td>
+                                    <td class="flex items-center space-x-2">
+                                        <button class="text-primary text-sm hover:underline" onclick="showUserDetail(5)">
+                                            详情
+                                        </button>
+                                        <button class="text-primary text-sm hover:underline" onclick="editUser(5)">
+                                            编辑
+                                        </button>
+                                        <button class="text-error text-sm hover:underline" onclick="deleteUser(5)">
+                                            删除
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 批量操作和分页 -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-4">
+                        <div class="flex items-center mb-4 sm:mb-0">
+                            <button class="btn btn-outline mr-2">
+                                <i class="fa fa-trash mr-1"></i> 批量删除
+                            </button>
+                            <button class="btn btn-outline mr-2">
+                                <i class="fa fa-check-circle mr-1"></i> 批量启用
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fa fa-ban mr-1"></i> 批量禁用
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:border-primary hover:text-primary disabled:opacity-50 disabled:pointer-events-none" disabled>
+                                <i class="fa fa-angle-left"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white">1</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">2</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">3</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">4</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color hover:border-primary hover:text-primary">5</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:border-primary hover:text-primary">
+                                <i class="fa fa-angle-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 角色管理卡片 -->
+                <div class="mt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium">角色管理</h3>
+                        <button class="btn btn-outline" id="add-role-btn">
+                            <i class="fa fa-plus mr-1"></i> 添加角色
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="user-card">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary mr-3">
+                                        <i class="fa fa-user-circle text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">超级管理员</h4>
+                                        <p class="text-xs text-text-secondary mt-1">拥有所有权限</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-primary text-sm hover:underline">编辑</button>
+                                    <button class="text-error text-sm hover:underline" disabled>删除</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-3">
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">用户管理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">售后管理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">配置管理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">统计分析</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">系统设置</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">...</span>
+                            </div>
+                        </div>
+                        <div class="user-card">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary mr-3">
+                                        <i class="fa fa-user-circle text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">管理员</h4>
+                                        <p class="text-xs text-text-secondary mt-1">管理权限</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-primary text-sm hover:underline">编辑</button>
+                                    <button class="text-error text-sm hover:underline">删除</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-3">
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">用户管理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">售后管理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">配置管理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">统计分析</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">...</span>
+                            </div>
+                        </div>
+                        <div class="user-card">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-warning-light flex items-center justify-center text-warning mr-3">
+                                        <i class="fa fa-headphones text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">客服专员</h4>
+                                        <p class="text-xs text-text-secondary mt-1">售后处理权限</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-primary text-sm hover:underline">编辑</button>
+                                    <button class="text-error text-sm hover:underline">删除</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-3">
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">售后单管理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">沟通记录</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">工单处理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">...</span>
+                            </div>
+                        </div>
+                        <div class="user-card">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-success-light flex items-center justify-center text-success mr-3">
+                                        <i class="fa fa-money text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">财务专员</h4>
+                                        <p class="text-xs text-text-secondary mt-1">退款处理权限</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-primary text-sm hover:underline">编辑</button>
+                                    <button class="text-error text-sm hover:underline">删除</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-3">
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">COD退款管理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">退款审核</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">退款记录</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">...</span>
+                            </div>
+                        </div>
+                        <div class="user-card">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-info flex items-center justify-center text-white mr-3">
+                                        <i class="fa fa-line-chart text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">运营专员</h4>
+                                        <p class="text-xs text-text-secondary mt-1">数据分析权限</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-primary text-sm hover:underline">编辑</button>
+                                    <button class="text-error text-sm hover:underline">删除</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-3">
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">售后统计分析</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">数据导出</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">报表管理</span>
+                                <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded">...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 添加管理员模态框 -->
+    <div id="add-user-modal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <div class="p-6 border-b border-border-color">
+                <h3 class="text-lg font-medium">添加管理员</h3>
+                <button class="absolute top-6 right-6 text-text-secondary hover:text-error" onclick="closeAddUserModal()">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="form-label">用户名 <span class="text-error">*</span></label>
+                        <input type="text" class="form-input" placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">密码 <span class="text-error">*</span></label>
+                        <input type="password" class="form-input" placeholder="请输入密码">
+                        <p class="form-help">密码长度至少8位，包含字母和数字</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">姓名 <span class="text-error">*</span></label>
+                        <input type="text" class="form-input" placeholder="请输入姓名">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">手机号码 <span class="text-error">*</span></label>
+                        <input type="tel" class="form-input" placeholder="请输入手机号码">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">邮箱</label>
+                        <input type="email" class="form-input" placeholder="请输入邮箱地址">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">角色 <span class="text-error">*</span></label>
+                        <select class="form-select">
+                            <option value="" selected disabled>请选择角色</option>
+                            <option value="admin">管理员</option>
+                            <option value="customer_service">客服专员</option>
+                            <option value="financial">财务专员</option>
+                            <option value="operation">运营专员</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">部门</label>
+                        <select class="form-select">
+                            <option value="" selected disabled>请选择部门</option>
+                            <option value="tech">技术部</option>
+                            <option value="operation">运营部</option>
+                            <option value="customer_service">客服部</option>
+                            <option value="finance">财务部</option>
+                            <option value="hr">人力资源部</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">状态</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="status" value="active" class="form-radio mr-2" checked>
+                                <span>启用</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="status" value="inactive" class="form-radio mr-2">
+                                <span>禁用</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label class="form-label">备注</label>
+                        <textarea class="form-textarea" placeholder="请输入备注信息"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-border-color flex items-center justify-end space-x-3">
+                <button class="btn btn-outline" onclick="closeAddUserModal()">
+                    取消
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fa fa-save mr-1"></i> 保存
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 角色权限配置模态框 -->
+    <div id="role-permission-modal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <div class="p-6 border-b border-border-color">
+                <h3 class="text-lg font-medium">角色权限配置</h3>
+                <button class="absolute top-6 right-6 text-text-secondary hover:text-error" onclick="closeRolePermissionModal()">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="form-group mb-6">
+                    <label class="form-label">角色名称</label>
+                    <input type="text" class="form-input" value="客服专员" readonly>
+                </div>
+                
+                <div class="space-y-4">
+                    <!-- 系统概览 -->
+                    <div class="border border-border-color rounded-md">
+                        <div class="flex items-center justify-between p-3 bg-gray-50">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span class="font-medium">系统概览</span>
+                            </div>
+                            <i class="fa fa-chevron-down text-text-secondary"></i>
+                        </div>
+                        <div class="p-3">
+                            <div class="flex items-center ml-6 mb-2">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span>数据看板</span>
+                            </div>
+                            <div class="flex items-center ml-6">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span>统计报表</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 售后管理 -->
+                    <div class="border border-border-color rounded-md">
+                        <div class="flex items-center justify-between p-3 bg-gray-50">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="form-checkbox mr-2" checked>
+                                <span class="font-medium">售后管理</span>
+                            </div>
+                            <i class="fa fa-chevron-down text-text-secondary"></i>
+                        </div>
+                        <div class="p-3">
+                            <div class="flex items-center ml-6 mb-2">
+                                <input type="checkbox" class="form-checkbox mr-2" checked>
+                                <span>售后单管理</span>
+                            </div>
+                            <div class="flex items-center ml-6 mb-2">
+                                <input type="checkbox" class="form-checkbox mr-2" checked>
+                                <span>售后单详情</span>
+                            </div>
+                            <div class="flex items-center ml-6 mb-2">
+                                <input type="checkbox" class="form-checkbox mr-2" checked>
+                                <span>沟通记录</span>
+                            </div>
+                            <div class="flex items-center ml-6">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span>COD退款管理</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 配置管理 -->
+                    <div class="border border-border-color rounded-md">
+                        <div class="flex items-center justify-between p-3 bg-gray-50">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span class="font-medium">配置管理</span>
+                            </div>
+                            <i class="fa fa-chevron-down text-text-secondary"></i>
+                        </div>
+                        <div class="p-3">
+                            <div class="flex items-center ml-6 mb-2">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span>售后配置管理</span>
+                            </div>
+                            <div class="flex items-center ml-6">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span>售后统计分析</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 系统设置 -->
+                    <div class="border border-border-color rounded-md">
+                        <div class="flex items-center justify-between p-3 bg-gray-50">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span class="font-medium">系统设置</span>
+                            </div>
+                            <i class="fa fa-chevron-down text-text-secondary"></i>
+                        </div>
+                        <div class="p-3">
+                            <div class="flex items-center ml-6 mb-2">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span>用户管理</span>
+                            </div>
+                            <div class="flex items-center ml-6">
+                                <input type="checkbox" class="form-checkbox mr-2">
+                                <span>操作日志</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-border-color flex items-center justify-end space-x-3">
+                <button class="btn btn-outline" onclick="closeRolePermissionModal()">
+                    取消
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fa fa-save mr-1"></i> 保存权限
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            
+            const navTexts = document.querySelectorAll('nav span');
+            navTexts.forEach(text => {
+                text.classList.toggle('hidden');
+            });
+            
+            const navTitles = document.querySelectorAll('nav .text-xs');
+            navTitles.forEach(title => {
+                title.classList.toggle('hidden');
+            });
+        });
+        
+        // 添加管理员模态框
+        document.getElementById('add-user-btn').addEventListener('click', function() {
+            document.getElementById('add-user-modal').classList.remove('hidden');
+        });
+        
+        function closeAddUserModal() {
+            document.getElementById('add-user-modal').classList.add('hidden');
+        }
+        
+        // 角色权限配置模态框
+        document.getElementById('add-role-btn').addEventListener('click', function() {
+            document.getElementById('role-permission-modal').classList.remove('hidden');
+        });
+        
+        function closeRolePermissionModal() {
+            document.getElementById('role-permission-modal').classList.add('hidden');
+        }
+        
+        // 用户操作函数
+        function showUserDetail(userId) {
+            alert(`查看用户ID ${userId} 的详情`);
+        }
+        
+        function editUser(userId) {
+            alert(`编辑用户ID ${userId}`);
+        }
+        
+        function deleteUser(userId) {
+            if (confirm(`确定要删除用户ID ${userId} 吗？`)) {
+                alert(`用户ID ${userId} 已删除`);
+            }
+        }
+        
+        // 批量删除
+        document.querySelector('button:has(i.fa-trash)').addEventListener('click', function() {
+            if (confirm('确定要删除选中的用户吗？')) {
+                alert('批量删除成功');
+            }
+        });
+        
+        // 批量启用
+        document.querySelector('button:has(i.fa-check-circle)').addEventListener('click', function() {
+            alert('批量启用成功');
+        });
+        
+        // 批量禁用
+        document.querySelector('button:has(i.fa-ban)').addEventListener('click', function() {
+            alert('批量禁用成功');
+        });
+        
+        // 导出功能
+        document.querySelector('button:has(i.fa-download)').addEventListener('click', function() {
+            alert('用户数据导出成功');
+        });
+        
+        // 权限折叠功能
+        document.querySelectorAll('.border.rounded-md .fa-chevron-down').forEach(chevron => {
+            chevron.addEventListener('click', function() {
+                const parent = this.closest('.border.rounded-md');
+                const content = parent.querySelector('.p-3:last-child');
+                content.classList.toggle('hidden');
+                
+                if (content.classList.contains('hidden')) {
+                    this.classList.remove('fa-chevron-down');
+                    this.classList.add('fa-chevron-right');
+                } else {
+                    this.classList.remove('fa-chevron-right');
+                    this.classList.add('fa-chevron-down');
+                }
+            });
+        });
+        
+        // 全选/取消全选
+        const mainCheckbox = document.querySelector('th .form-checkbox');
+        if (mainCheckbox) {
+            mainCheckbox.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('td .form-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
+        
+        // 角色编辑/删除
+        document.querySelectorAll('.user-card button').forEach(button => {
+            button.addEventListener('click', function() {
+                const roleName = this.closest('.user-card').querySelector('h4').textContent;
+                
+                if (this.textContent.trim() === '编辑') {
+                    alert(`编辑角色: ${roleName}`);
+                    document.getElementById('role-permission-modal').classList.remove('hidden');
+                } else if (this.textContent.trim() === '删除') {
+                    if (confirm(`确定要删除角色 "${roleName}" 吗？`)) {
+                        alert(`角色 "${roleName}" 已删除`);
+                    }
+                }
+            });
+        });
+        
+        // 模态框点击外部关闭
+        document.querySelectorAll('.modal-backdrop').forEach(modal => {
+            modal.addEventListener('click', function(event) {
+                if (event.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
