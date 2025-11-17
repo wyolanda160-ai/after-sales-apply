@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>修改售后申请</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #f5f5f5;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid #eee;
+            z-index: 1000;
+        }
+        
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .header-back {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            margin-top: 44px;
+            padding: 16px;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            padding: 12px 16px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .section-content {
+            padding: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-tips {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        .error-message {
+            font-size: 12px;
+            color: #ff4d4f;
+            margin-top: 4px;
+        }
+        
+        /* 商品信息样式 */
+        .product-info {
+            display: flex;
+            padding: 12px 16px;
+            gap: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        
+        .product-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .product-title {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-spec {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .product-price {
+            color: #ff6b00;
+            font-weight: 600;
+        }
+        
+        .product-quantity {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        /* 选择框样式 */
+        .select-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .select-item {
+            flex: 1 0 calc(33.333% - 10px);
+            min-width: 80px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .select-item.selected {
+            border-color: #ff6b00;
+            color: #ff6b00;
+            background-color: #fff3e5;
+        }
+        
+        /* 文本域样式 */
+        textarea {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            height: 100px;
+            font-family: inherit;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #ff6b00;
+        }
+        
+        /* 上传图片样式 */
+        .upload-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .upload-item {
+            width: 80px;
+            height: 80px;
+            border: 1px dashed #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .upload-icon {
+            font-size: 24px;
+            color: #ddd;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .delete-icon {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        /* 金额输入样式 */
+        .amount-input {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        
+        .amount-input:focus {
+            outline: none;
+            border-color: #ff6b00;
+        }
+        
+        /* 提交按钮样式 */
+        .submit-btn {
+            width: 100%;
+            height: 44px;
+            background-color: #ff6b00;
+            color: white;
+            border: none;
+            border-radius: 22px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+        
+        /* 拒绝原因提示 */
+        .reject-reason {
+            background-color: #fff3e5;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            border-left: 3px solid #ff6b00;
+        }
+        
+        .reject-reason-title {
+            font-weight: 600;
+            color: #ff6b00;
+            margin-bottom: 8px;
+        }
+        
+        .reject-reason-content {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-back" onclick="window.history.back()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 19L5 12L12 5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="header-title">修改售后申请</div>
+        <div style="width: 24px;"></div>
+    </div>
+    
+    <div class="container">
+        <!-- 拒绝原因提示 -->
+        <div class="reject-reason">
+            <div class="reject-reason-title">商家拒绝原因</div>
+            <div class="reject-reason-content">经核实，商品与描述一致，请提供更多证据说明商品存在的具体问题，或选择其他更合适的售后原因。</div>
+        </div>
+        
+        <!-- 商品信息 -->
+        <div class="section">
+            <div class="product-info">
+                <img src="../images/product.jpg" alt="商品图片" class="product-image">
+                <div class="product-details">
+                    <div>
+                        <div class="product-title">高级蓝牙耳机 主动降噪 长续航</div>
+                        <div class="product-spec">颜色: 黑色 | 版本: 标准版</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="product-price">¥299.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 售后类型 -->
+        <div class="section">
+            <div class="section-title">售后类型</div>
+            <div class="section-content">
+                <div class="select-group">
+                    <div class="select-item" data-type="refundOnly">仅退款</div>
+                    <div class="select-item selected" data-type="returnRefund">退货退款</div>
+                    <div class="select-item" data-type="exchange">换货</div>
+                </div>
+                <div class="form-tips">请选择合适的售后类型</div>
+            </div>
+        </div>
+        
+        <!-- 售后原因 -->
+        <div class="section">
+            <div class="section-title">售后原因</div>
+            <div class="section-content">
+                <div class="select-group">
+                    <div class="select-item" data-reason="quality">质量问题</div>
+                    <div class="select-item" data-reason="description">商品与描述不符</div>
+                    <div class="select-item selected" data-reason="damaged">商品损坏</div>
+                    <div class="select-item" data-reason="wrongItem">发错商品</div>
+                    <div class="select-item" data-reason="notNeeded">不想要了</div>
+                    <div class="select-item" data-reason="other">其他原因</div>
+                </div>
+                <div class="form-tips">请选择具体的售后原因</div>
+            </div>
+        </div>
+        
+        <!-- 补充说明 -->
+        <div class="section">
+            <div class="section-title">补充说明</div>
+            <div class="section-content">
+                <textarea placeholder="请详细描述您遇到的问题，有助于商家更好地为您处理" id="description">收到的商品包装破损，耳机外壳有明显划痕，怀疑是二手商品。</textarea>
+                <div class="form-tips">最多200字</div>
+            </div>
+        </div>
+        
+        <!-- 上传凭证 -->
+        <div class="section">
+            <div class="section-title">上传凭证（可选）</div>
+            <div class="section-content">
+                <div class="upload-container">
+                    <div class="upload-item" id="uploadBtn">
+                        <div class="upload-icon">+</div>
+                    </div>
+                    <div class="upload-item">
+                        <img src="../images/evidence1.jpg" alt="凭证图片" class="image-preview">
+                        <div class="delete-icon">×</div>
+                    </div>
+                </div>
+                <div class="form-tips">最多上传9张图片，单张不超过5MB</div>
+            </div>
+        </div>
+        
+        <!-- 退款金额 -->
+        <div class="section">
+            <div class="section-title">退款金额</div>
+            <div class="section-content">
+                <input type="number" class="amount-input" value="299.00" step="0.01" min="0" max="299.00" id="refundAmount">
+                <div class="form-tips">最高可退：¥299.00</div>
+            </div>
+        </div>
+        
+        <!-- 提交按钮 -->
+        <button class="submit-btn" id="submitBtn">重新提交申请</button>
+    </div>
+    
+    <script>
+        // 选择框点击事件
+        document.querySelectorAll('.select-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 获取同组的所有选择项
+                const group = this.parentElement.querySelectorAll('.select-item');
+                // 移除同组其他项的选中状态
+                group.forEach(el => el.classList.remove('selected'));
+                // 添加当前项的选中状态
+                this.classList.add('selected');
+            });
+        });
+        
+        // 图片上传按钮点击事件
+        document.getElementById('uploadBtn').addEventListener('click', function() {
+            alert('打开图片选择器');
+            // 实际应用中这里应该触发文件选择
+        });
+        
+        // 删除图片点击事件
+        document.querySelectorAll('.delete-icon').forEach(icon => {
+            icon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (confirm('确定要删除这张图片吗？')) {
+                    this.parentElement.remove();
+                }
+            });
+        });
+        
+        // 提交按钮点击事件
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const selectedType = document.querySelector('.select-group[data-type] .selected').dataset.type;
+            const selectedReason = document.querySelector('.select-group[data-reason] .selected').dataset.reason;
+            const description = document.getElementById('description').value;
+            const refundAmount = document.getElementById('refundAmount').value;
+            
+            // 简单验证
+            if (!description.trim()) {
+                alert('请填写补充说明');
+                return;
+            }
+            
+            if (!refundAmount || parseFloat(refundAmount) <= 0) {
+                alert('请填写正确的退款金额');
+                return;
+            }
+            
+            // 提交申请
+            if (confirm('确定要重新提交售后申请吗？')) {
+                alert('售后申请已重新提交，等待商家处理');
+                window.location.href = 'after-sales-detail.html';
+            }
+        });
+    </script>
+</body>
+</html>

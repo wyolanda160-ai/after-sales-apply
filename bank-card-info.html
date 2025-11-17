@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>填写银行卡信息</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #f5f5f5;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid #eee;
+            z-index: 1000;
+        }
+        
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .header-back {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            margin-top: 44px;
+            padding: 16px;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            padding: 12px 16px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .form-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .form-item:last-child {
+            border-bottom: none;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .required {
+            color: #ff4d4f;
+            margin-left: 4px;
+        }
+        
+        /* 商品信息样式 */
+        .product-info {
+            padding: 12px 16px;
+            background-color: #fafafa;
+        }
+        
+        .product-detail {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        
+        .product-content {
+            flex: 1;
+        }
+        
+        .product-title {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .product-spec {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .info-label {
+            color: #666;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .refund-amount {
+            color: #ff6b00;
+        }
+        
+        .bank-info {            background-color: #f0f9ff;            border-radius: 8px;            padding: 12px;            margin: 16px 0;        }        
+        .bank-info-title {            font-weight: 600;            color: #1890ff;            margin-bottom: 8px;            font-size: 14px;        }        
+        .bank-info-content {            font-size: 12px;            color: #666;            line-height: 1.5;        }        
+        .bank-info-content p {            margin-bottom: 6px;        }
+        
+        .form-tip {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .form-error {
+            font-size: 12px;
+            color: #ff4d4f;
+            margin-top: 5px;
+        }
+        
+        .form-input:focus {
+            border-color: #ff6b00;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            height: 48px;
+            background-color: #ff6b00;
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+        
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-back" onclick="window.history.back()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 19L5 12L12 5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="header-title">填写银行卡信息</div>
+        <div style="width: 24px;"></div>
+    </div>
+    
+    <div class="container">
+        <!-- 售后信息 -->
+        <div class="section">
+            <div class="section-title">售后信息</div>
+            <div class="product-info">
+                <div class="product-detail">
+                    <img src="../images/product.jpg" alt="商品图片" class="product-image">
+                    <div class="product-content">
+                        <div class="product-title">高级蓝牙耳机 主动降噪 长续航</div>
+                        <div class="product-spec">颜色: 黑色 | 版本: 标准版</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">售后类型</div>
+                    <div class="info-value">退货退款</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">退款金额</div>
+                    <div class="info-value refund-amount">¥299.00</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">支付方式</div>
+                    <div class="info-value">货到付款(COD)</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 银行卡信息 -->
+        <div class="section">
+            <div class="section-title">银行卡信息</div>
+            <div class="form-item">                <div class="form-label">持卡人姓名 <span class="required">*</span></div>                <input type="text" class="form-input" id="cardHolder" placeholder="请输入持卡人姓名">                <div class="form-tip">请填写与银行卡一致的真实姓名</div>            </div>            <div class="form-item">                <div class="form-label">银行卡号 <span class="required">*</span></div>                <input type="text" class="form-input" id="cardNumber" placeholder="请输入银行卡号">                <div class="form-tip">支持16-19位储蓄卡，信用卡可能无法接收退款</div>            </div>            <div class="form-item">                <div class="form-label">开户银行 <span class="required">*</span></div>                <select class="form-select" id="bankName">                    <option value="">请选择开户银行</option>                    <option value="工商银行">工商银行</option>                    <option value="建设银行">建设银行</option>                    <option value="农业银行">农业银行</option>                    <option value="中国银行">中国银行</option>                    <option value="招商银行">招商银行</option>                    <option value="交通银行">交通银行</option>                    <option value="邮政储蓄银行">邮政储蓄银行</option>                    <option value="中信银行">中信银行</option>                    <option value="浦发银行">浦发银行</option>                    <option value="兴业银行">兴业银行</option>                    <option value="其他银行">其他银行</option>                </select>            </div>            <div class="form-item">                <div class="form-label">开户分行 <span class="required">*</span></div>                <input type="text" class="form-input" id="bankBranch" placeholder="请输入开户分行信息">                <div class="form-tip">格式如：建设银行上海市分行浦东支行</div>            </div>            <div class="form-item">                <div class="form-label">手机号码 <span class="required">*</span></div>                <input type="tel" class="form-input" id="phoneNumber" placeholder="请输入银行卡预留手机号">                <div class="form-tip">用于验证银行卡信息，请确保与银行预留手机号一致</div>            </div>
+        </div>
+        
+        <!-- 填写须知 -->
+        <div class="bank-info">
+            <div class="bank-info-title">填写须知</div>
+            <div class="bank-info-content">
+                <p>1. 请确保银行卡信息准确无误，以便商家及时为您退款</p>
+                <p>2. 建议使用主流银行的储蓄卡，信用卡可能无法正常接收退款</p>
+                <p>3. 退款将在商家确认收货后的3个工作日内完成处理</p>
+                <p>4. 银行卡信息仅用于退款，我们会严格保护您的个人信息安全</p>
+            </div>
+        </div>
+        
+        <!-- 提交按钮 -->
+        <button class="submit-btn" id="submitBtn">保存银行卡信息</button>
+    </div>
+    
+    <script>
+        // 从URL获取参数
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                orderId: params.get('orderId'),
+                afterSalesType: params.get('afterSalesType'),
+                reason: params.get('reason')
+            };
+        }
+        
+        // 初始化页面
+        function initPage() {
+            const params = getUrlParams();
+            
+            // 如果有订单ID，可以根据ID加载商品信息
+            if (params.orderId) {
+                // 在实际应用中，这里应该调用API获取商品信息
+                console.log(`加载订单${params.orderId}的商品信息`);
+                // 模拟商品数据（实际应从服务器获取）
+                loadMockProductData(params.orderId);
+            }
+            
+            // 如果有售后类型，更新显示
+            if (params.afterSalesType) {
+                document.querySelector('.info-row:nth-child(2) .info-value').textContent = params.afterSalesType;
+            }
+        }
+        
+        // 加载模拟商品数据
+        function loadMockProductData(orderId) {
+            // 模拟不同订单的商品数据
+            const mockProducts = {
+                'OD202306100001': {
+                    image: 'https://picsum.photos/id/1/200/200',
+                    title: '时尚智能手表 多功能运动监测 心率监测 防水',
+                    spec: '颜色：黑色 / 尺寸：42mm',
+                    price: '¥999.00'
+                },
+                'OD202306080002': {
+                    image: 'https://picsum.photos/id/2/200/200',
+                    title: '无线蓝牙耳机 主动降噪 长续航 高清通话',
+                    spec: '颜色：白色 / 版本：标准版',
+                    price: '¥499.00'
+                },
+                'OD202306010003': {
+                    image: 'https://picsum.photos/id/3/200/200',
+                    title: '智能音箱 AI语音助手 360°环绕音效 智能家居控制',
+                    spec: '颜色：星空灰 / 版本：Pro',
+                    price: '¥299.00'
+                },
+                'OD202306050005': {
+                    image: 'https://picsum.photos/id/5/200/200',
+                    title: '轻便运动鞋 透气网面 减震防滑 舒适百搭',
+                    spec: '颜色：深蓝 / 尺码：42',
+                    price: '¥399.00'
+                }
+            };
+            
+            const product = mockProducts[orderId] || {
+                image: 'https://picsum.photos/id/42/200/200',
+                title: '商品标题',
+                spec: '规格信息',
+                price: '¥0.00'
+            };
+            
+            // 更新页面上的商品信息
+            document.querySelector('.product-image').src = product.image;
+            document.querySelector('.product-title').textContent = product.title;
+            document.querySelector('.product-spec').textContent = product.spec;
+            document.querySelector('.refund-amount').textContent = product.price;
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', initPage);
+        
+        // 保存银行卡信息按钮点击事件
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const params = getUrlParams();
+            
+            // 重置所有错误提示
+            document.querySelectorAll('.form-error').forEach(el => el.remove());
+            
+            // 表单验证
+            const cardHolder = document.getElementById('cardHolder').value.trim();
+            const cardNumber = document.getElementById('cardNumber').value.trim().replace(/\s/g, '');
+            const bankName = document.getElementById('bankName').value;
+            const bankBranch = document.getElementById('bankBranch').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            
+            let isValid = true;
+            
+            // 持卡人姓名验证
+            if (!cardHolder) {
+                showError('cardHolder', '请输入持卡人姓名');
+                isValid = false;
+            }
+            
+            // 银行卡号验证
+            if (!cardNumber) {
+                showError('cardNumber', '请输入银行卡号');
+                isValid = false;
+            } else if (!/^\d{16,19}$/.test(cardNumber)) {
+                showError('cardNumber', '请输入16-19位的银行卡号');
+                isValid = false;
+            }
+            
+            // 开户银行验证
+            if (!bankName) {
+                showError('bankName', '请选择开户银行');
+                isValid = false;
+            }
+            
+            // 开户分行验证
+            if (!bankBranch) {
+                showError('bankBranch', '请输入开户分行信息');
+                isValid = false;
+            }
+            
+            // 手机号码验证
+            if (!phoneNumber) {
+                showError('phoneNumber', '请输入手机号码');
+                isValid = false;
+            } else if (!/^1[3-9]\d{9}$/.test(phoneNumber)) {
+                showError('phoneNumber', '请输入正确的手机号码');
+                isValid = false;
+            }
+            
+            // 如果验证通过，提交表单
+            if (isValid) {
+                // 收集所有表单数据
+                const bankInfo = {
+                    cardHolder,
+                    cardNumber,
+                    bankName,
+                    bankBranch,
+                    phoneNumber
+                };
+                
+                // 在实际应用中，这里应该调用API保存银行卡信息和售后申请
+                console.log('保存银行卡信息:', bankInfo);
+                console.log('售后申请信息:', {
+                    orderId: params.orderId,
+                    afterSalesType: params.afterSalesType,
+                    reason: params.reason
+                });
+                
+                // 模拟提交成功
+                alert('银行卡信息保存成功！商家将尽快为您处理退款。');
+                
+                // 跳转到售后详情页面，可以根据订单ID生成售后单号
+                setTimeout(() => {
+                    // 模拟生成售后单号
+                    const afterSalesId = `AS${Date.now().toString().slice(-8)}`;
+                    window.location.href = `after-sales-detail.html?afterSalesId=${afterSalesId}&orderId=${params.orderId}`;
+                }, 1500);
+            }
+        });
+        
+        // 显示错误提示
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const existingError = field.parentElement.querySelector('.form-error');
+            
+            if (!existingError) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'form-error';
+                errorDiv.textContent = message;
+                field.parentElement.appendChild(errorDiv);
+            } else {
+                existingError.textContent = message;
+            }
+            
+            // 聚焦到错误字段
+            field.focus();
+        }
+        
+        // 添加表单字段焦点事件，移除错误提示
+        document.querySelectorAll('.form-input, .form-select').forEach(field => {
+            field.addEventListener('focus', function() {
+                const errorEl = this.parentElement.querySelector('.form-error');
+                if (errorEl) {
+                    errorEl.remove();
+                }
+            });
+        });
+        
+        // 银行卡号输入格式化（每4位加空格）
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = '';
+            
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            
+            e.target.value = formattedValue;
+        });
+    </script>
+</body>
+</html>

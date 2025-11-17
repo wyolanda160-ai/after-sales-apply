@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的订单</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #f5f5f5;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #eee;
+            z-index: 1000;
+        }
+        
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .order-tabs {
+            position: fixed;
+            top: 44px;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+            z-index: 999;
+        }
+        
+        .tab-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .tab-item.active {
+            color: #ff6b00;
+        }
+        
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: #ff6b00;
+            border-radius: 1.5px;
+        }
+        
+        .container {
+            padding-top: 88px;
+            padding-bottom: 16px;
+        }
+        
+        .order-card {
+            background-color: #fff;
+            margin: 12px 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .order-header {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .order-id-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .payment-method {
+            font-size: 12px;
+            color: #666;
+            margin-left: 12px;
+        }
+        
+        .payment-method.cod {
+            color: #ff6b00;
+            font-weight: 500;
+        }
+        
+        .order-id {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .order-status {
+            color: #ff6b00;
+            font-weight: 500;
+        }
+        
+        .after-sales-tag {
+            font-size: 12px;
+            color: #fff;
+            background-color: #ff6b00;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+        
+        .order-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .product-title {
+            font-size: 14px;
+            color: #333;
+            line-height: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-sku {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        .product-price-quantity {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+        
+        .product-price {
+            color: #ff6b00;
+            font-weight: 500;
+        }
+        
+        .product-quantity {
+            color: #999;
+            font-size: 13px;
+        }
+        
+        .order-footer {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .order-amount {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .order-amount strong {
+            color: #ff6b00;
+            font-size: 15px;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            background-color: #fff;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .action-btn.primary {
+            background-color: #ff6b00;
+            color: #fff;
+            border-color: #ff6b00;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 16px;
+            color: #999;
+        }
+        
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <div class="header">
+        <div class="header-title">我的订单</div>
+    </div>
+    
+    <!-- 订单状态标签页 -->
+    <div class="order-tabs">
+        <div class="tab-item active" onclick="switchTab('all')">全部</div>
+        <div class="tab-item" onclick="switchTab('pending-payment')">待付款</div>
+        <div class="tab-item" onclick="switchTab('pending-shipment')">待发货</div>
+        <div class="tab-item" onclick="switchTab('pending-receipt')">待收货</div>
+        <div class="tab-item" onclick="switchTab('completed')">已完成</div>
+    </div>
+    
+    <!-- 订单列表容器 -->
+    <div class="container" id="order-list-container">
+        <!-- 订单卡片 - 待发货（可申请仅退款） -->
+        <div class="order-card">
+            <div class="order-header">
+                    <div class="order-id-container">
+                        <div class="order-id">订单号：OD202306100001</div>
+                        <span class="payment-method">在线支付</span>
+                    </div>
+                    <div class="order-status">待发货<span class="after-sales-tag">已申请售后</span></div>
+                </div>
+            <div class="order-item">
+                <img class="product-image" src="https://picsum.photos/id/1/200/200" alt="智能手表">
+                <div class="product-info">
+                    <div>
+                        <div class="product-title">时尚智能手表 多功能运动监测 心率监测 防水</div>
+                        <div class="product-sku">颜色：黑色 / 尺寸：42mm</div>
+                    </div>
+                    <div class="product-price-quantity">
+                        <div class="product-price">¥999.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-footer">
+                <div class="order-amount">共1件商品 合计：<strong>¥999.00</strong></div>
+                <div class="order-actions">
+                    <button class="action-btn" onclick="viewOrderDetail('OD202306100001')">查看详情</button>
+                    <button class="action-btn" onclick="applyAfterSales('OD202306100001', 'pending-shipment')">申请售后</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 订单卡片 - 已发货未签收（可申请仅退款/退货退款） -->
+        <div class="order-card">
+            <div class="order-header">
+                    <div class="order-id-container">
+                        <div class="order-id">订单号：OD202306080002</div>
+                        <span class="payment-method">在线支付</span>
+                    </div>
+                    <div class="order-status">已发货</div>
+                </div>
+            <div class="order-item">
+                <img class="product-image" src="https://picsum.photos/id/2/200/200" alt="无线耳机">
+                <div class="product-info">
+                    <div>
+                        <div class="product-title">无线蓝牙耳机 主动降噪 长续航 高清通话</div>
+                        <div class="product-sku">颜色：白色 / 版本：标准版</div>
+                    </div>
+                    <div class="product-price-quantity">
+                        <div class="product-price">¥499.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-footer">
+                <div class="order-amount">共1件商品 合计：<strong>¥499.00</strong></div>
+                <div class="order-actions">
+                    <button class="action-btn" onclick="viewLogistics('OD202306080002')">查看物流</button>
+                    <button class="action-btn" onclick="applyAfterSales('OD202306080002', 'shipped')">申请售后</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 订单卡片 - 已签收（7天内，可申请全部售后类型） -->
+        <div class="order-card">
+            <div class="order-header">
+                    <div class="order-id-container">
+                        <div class="order-id">订单号：OD202306010003</div>
+                        <span class="payment-method">在线支付</span>
+                    </div>
+                    <div class="order-status">已签收</div>
+                </div>
+            <div class="order-item">
+                <img class="product-image" src="https://picsum.photos/id/3/200/200" alt="智能音箱">
+                <div class="product-info">
+                    <div>
+                        <div class="product-title">智能音箱 AI语音助手 360°环绕音效 智能家居控制</div>
+                        <div class="product-sku">颜色：星空灰 / 版本：Pro</div>
+                    </div>
+                    <div class="product-price-quantity">
+                        <div class="product-price">¥299.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-footer">
+                <div class="order-amount">共1件商品 合计：<strong>¥299.00</strong></div>
+                <div class="order-actions">
+                    <button class="action-btn" onclick="applyAfterSales('OD202306010003', 'received')">申请售后</button>
+                    <button class="action-btn primary" onclick="confirmReceipt('OD202306010003')">确认收货</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 订单卡片 - 已完成（超过7天，不可申请售后） -->
+        <div class="order-card">
+            <div class="order-header">
+                    <div class="order-id-container">
+                        <div class="order-id">订单号：OD202305010004</div>
+                        <span class="payment-method">在线支付</span>
+                    </div>
+                    <div class="order-status">已完成</div>
+                </div>
+            <div class="order-item">
+                <img class="product-image" src="https://picsum.photos/id/4/200/200" alt="移动电源">
+                <div class="product-info">
+                    <div>
+                        <div class="product-title">大容量移动电源 20000mAh 双向快充 兼容多设备</div>
+                        <div class="product-sku">颜色：银灰色</div>
+                    </div>
+                    <div class="product-price-quantity">
+                        <div class="product-price">¥159.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-footer">
+                <div class="order-amount">共1件商品 合计：<strong>¥159.00</strong></div>
+                <div class="order-actions">
+                    <button class="action-btn" onclick="viewOrderDetail('OD202305010004')">查看详情</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 订单卡片 - COD订单（货到付款，已签收） -->
+        <div class="order-card">
+            <div class="order-header">
+                    <div class="order-id-container">
+                        <div class="order-id">订单号：OD202306050005</div>
+                        <span class="payment-method cod">货到付款</span>
+                    </div>
+                    <div class="order-status">已签收</div>
+                </div>
+            <div class="order-item">
+                <img class="product-image" src="https://picsum.photos/id/5/200/200" alt="运动鞋">
+                <div class="product-info">
+                    <div>
+                        <div class="product-title">轻便运动鞋 透气网面 减震防滑 舒适百搭</div>
+                        <div class="product-sku">颜色：深蓝 / 尺码：42</div>
+                    </div>
+                    <div class="product-price-quantity">
+                        <div class="product-price">¥399.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-footer">
+                    <div class="order-amount">共1件商品 合计：<strong>¥399.00</strong></div>
+                    <div class="order-actions">
+                        <button class="action-btn" onclick="applyAfterSales('OD202306050005', 'received', true)">申请售后</button>
+                    </div>
+                </div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换订单标签页
+        function switchTab(tabType) {
+            // 移除所有标签的激活状态
+            const tabItems = document.querySelectorAll('.tab-item');
+            tabItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 激活当前标签
+            event.currentTarget.classList.add('active');
+            
+            // 这里可以根据tabType筛选显示不同状态的订单
+            // 实际应用中应该从服务器获取对应状态的订单数据
+            console.log(`切换到${tabType}标签页`);
+        }
+        
+        // 申请售后
+        function applyAfterSales(orderId, orderStatus, isCod = false) {
+            // 根据订单状态决定可以申请的售后类型
+            let availableTypes = [];
+            
+            switch(orderStatus) {
+                case 'pending-shipment':
+                    // 待发货状态只能申请仅退款
+                    availableTypes = ['refund-only'];
+                    break;
+                case 'shipped':
+                    // 已发货未签收可以申请仅退款或退货退款（拒收）
+                    availableTypes = ['refund-only', 'return-refund'];
+                    break;
+                case 'received':
+                    // 已签收可以申请所有类型
+                    availableTypes = ['refund-only', 'return-refund', 'exchange'];
+                    break;
+                default:
+                    alert('该订单状态暂不支持申请售后');
+                    return;
+            }
+            
+            // 保存订单ID和可用的售后类型到URL参数
+            const params = new URLSearchParams();
+            params.append('orderId', orderId);
+            params.append('orderStatus', orderStatus);
+            params.append('availableTypes', availableTypes.join(','));
+            params.append('isCod', isCod ? 'true' : 'false');
+            
+            // 跳转到售后申请页面
+            window.location.href = `after-sales-apply.html?${params.toString()}`;
+        }
+        
+        // 查看订单详情
+        function viewOrderDetail(orderId) {
+            // 实际应用中应该跳转到订单详情页面
+            alert(`查看订单${orderId}详情`);
+        }
+        
+        // 查看物流
+        function viewLogistics(orderId) {
+            // 跳转到物流跟踪页面
+            window.location.href = `logistics-tracking.html?orderId=${orderId}`;
+        }
+        
+        // 确认收货
+        function confirmReceipt(orderId) {
+            if (confirm('确认已收到商品吗？')) {
+                alert(`订单${orderId}已确认收货`);
+                // 实际应用中应该调用确认收货的API
+            }
+        }
+    </script>
+</body>
+</html>

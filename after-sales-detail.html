@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>售后详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #f5f5f5;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid #eee;
+            z-index: 1000;
+        }
+        
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .header-back {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            margin-top: 44px;
+            padding: 16px;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            padding: 12px 16px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        /* 默认状态样式 */
+        .status-section {
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            border-radius: 8px;
+        }
+        
+        .status-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .status-desc {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* 待处理状态 - 橙色 */
+        .status-section.pending {
+            background-color: #fff3e5;
+        }
+        
+        .status-section.pending .status-title,
+        .status-section.pending .status-desc {
+            color: #ff6b00;
+        }
+        
+        /* 处理中状态 - 蓝色 */
+        .status-section.processing {
+            background-color: #e6f7ff;
+        }
+        
+        .status-section.processing .status-title,
+        .status-section.processing .status-desc {
+            color: #1890ff;
+        }
+        
+        /* 成功状态 - 绿色 */
+        .status-section.success {
+            background-color: #f6ffed;
+        }
+        
+        .status-section.success .status-title,
+        .status-section.success .status-desc {
+            color: #52c41a;
+        }
+        
+        /* 拒绝状态 - 红色 */
+        .status-section.rejected {
+            background-color: #fff1f0;
+        }
+        
+        .status-section.rejected .status-title,
+        .status-section.rejected .status-desc {
+            color: #ff4d4f;
+        }
+        
+        /* 取消状态 - 灰色 */
+        .status-section.canceled {
+            background-color: #f5f5f5;
+        }
+        
+        .status-section.canceled .status-title,
+        .status-section.canceled .status-desc {
+            color: #999;
+        }
+        
+        .timeline {
+            padding: 16px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            padding-bottom: 20px;
+        }
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 6px;
+            bottom: 0;
+            width: 2px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #ff6b00;
+            z-index: 2;
+        }
+        
+        .timeline-item:not(.active) .timeline-dot {
+            background-color: #e0e0e0;
+        }
+        
+        .timeline-content {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #666;
+        }
+        
+        .info-value {
+            color: #333;
+            text-align: right;
+            flex: 1;
+            margin-left: 16px;
+        }
+        
+        /* 商品信息样式 */
+        .product-info {
+            display: flex;
+            padding: 12px 16px;
+            gap: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        
+        .product-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .product-title {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-spec {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .product-price {
+            color: #ff6b00;
+            font-weight: 600;
+        }
+        
+        .product-quantity {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding: 0 16px 24px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            height: 44px;
+            border-radius: 22px;
+            border: 1px solid #ff6b00;
+            background-color: #fff;
+            color: #ff6b00;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .action-btn.primary {
+            background-color: #ff6b00;
+            color: #fff;
+            border: none;
+        }
+        
+        /* 物流信息样式 */
+        .logistics-form {
+            padding: 16px;
+        }
+        
+        .logistics-input {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-back">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 19L5 12L12 5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="header-title">售后详情</div>
+        <div style="width: 24px;"></div>
+    </div>
+    
+    <div class="container">
+        <!-- 状态显示 -->
+        <div class="status-section" id="statusSection">
+            <div class="status-title" id="statusTitle">待商户处理</div>
+            <div class="status-desc" id="statusDesc">您的售后申请已提交，商家将在48小时内审核</div>
+        </div>
+        
+        <!-- 进度时间轴 -->
+        <div class="section">
+            <div class="timeline">
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">已提交售后申请</div>
+                    <div class="timeline-time">2023-10-27 14:30:25</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">等待商家审核</div>
+                    <div class="timeline-time"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">商家同意申请</div>
+                    <div class="timeline-time"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">退款完成</div>
+                    <div class="timeline-time"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 商品信息 -->
+        <div class="section">
+            <div class="section-title">商品信息</div>
+            <div class="product-info">
+                <img src="../images/product.jpg" alt="商品图片" class="product-image">
+                <div class="product-details">
+                    <div>
+                        <div class="product-title">高级蓝牙耳机 主动降噪 长续航</div>
+                        <div class="product-spec">颜色: 黑色 | 版本: 标准版</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="product-price">¥299.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 售后信息 -->
+        <div class="section">
+            <div class="section-title">售后信息</div>
+            <div class="info-row">
+                <div class="info-label">售后单号</div>
+                <div class="info-value">AS2023102700001</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">售后类型</div>
+                <div class="info-value">仅退款</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">申请原因</div>
+                <div class="info-value">商品与描述不符</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">补充说明</div>
+                <div class="info-value">收到的商品与页面描述有差异，希望退款</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">申请金额</div>
+                <div class="info-value">¥299.00</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">申请时间</div>
+                <div class="info-value">2023-10-27 14:30:25</div>
+            </div>
+        </div>
+        
+        <!-- 订单信息 -->
+        <div class="section">
+            <div class="section-title">订单信息</div>
+            <div class="info-row">
+                <div class="info-label">订单编号</div>
+                <div class="info-value">2023102600001</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">支付方式</div>
+                <div class="info-value">货到付款(COD)</div>
+            </div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <button class="action-btn" id="cancelBtn">撤销售后</button>
+        </div>
+    </div>
+    
+    <script>
+        // 撤销售后按钮点击事件
+        document.getElementById('cancelBtn').addEventListener('click', function() {
+            if (confirm('确定要撤销售后申请吗？')) {
+                alert('售后申请已撤销');
+                // 实际应用中这里应该有撤销售后的API调用
+            }
+        });
+        
+        // 根据售后状态显示不同的操作按钮
+        function updateActionButtons(status) {
+            const actionContainer = document.querySelector('.action-buttons');
+            
+            switch(status) {
+                case 'WAIT_RETURN':
+                    actionContainer.innerHTML = `
+                        <button class="action-btn" id="updateLogisticsBtn" onclick="window.location.href='logistics-info.html'">填写物流信息</button>
+                    `;
+                    break;
+                case 'USER_SHIPPED':
+                    actionContainer.innerHTML = `
+                        <button class="action-btn" id="updateLogisticsBtn" onclick="window.location.href='logistics-info.html'">修改物流信息</button>
+                    `;
+                    break;
+                case 'MERCHANT_RECEIVED':
+                    actionContainer.innerHTML = '';
+                    break;
+                case 'REFUNDING':
+                    actionContainer.innerHTML = '';
+                    break;
+                case 'COD_REFUND_PENDING':
+                    actionContainer.innerHTML = `
+                        <button class="action-btn primary" id="confirmRefundBtn">确认收到退款</button>
+                    `;
+                    break;
+                case 'REJECTED':
+                    actionContainer.innerHTML = `
+                        <button class="action-btn" id="updateApplyBtn">修改后重新提交</button>
+                        <button class="action-btn primary" id="platformInterveneBtn">申请平台介入</button>
+                    `;
+                    break;
+                case 'SUCCESS':
+                case 'CANCELED':
+                case 'CLOSED':
+                    actionContainer.innerHTML = '';
+                    break;
+                default:
+                    // 默认显示撤销售后按钮（待商户处理状态）
+                    actionContainer.innerHTML = `
+                        <button class="action-btn" id="cancelBtn">撤销售后</button>
+                    `;
+            }
+            
+            // 绑定相应的事件处理
+            bindEventListeners();
+        }
+        
+        // 绑定事件监听器
+        function bindEventListeners() {
+            // 填写物流信息
+            if (document.getElementById('updateLogisticsBtn')) {
+                // 已通过onclick属性直接实现页面跳转
+            }
+            
+            // 确认收到退款
+            if (document.getElementById('confirmRefundBtn')) {
+                document.getElementById('confirmRefundBtn').addEventListener('click', function() {
+                    if (confirm('确认已收到退款吗？')) {
+                        alert('已确认收到退款');
+                        // 实际应用中这里应该有确认退款的API调用
+                    }
+                });
+            }
+            
+            // 修改后重新提交
+            if (document.getElementById('updateApplyBtn')) {
+                document.getElementById('updateApplyBtn').addEventListener('click', function() {
+                    alert('跳转到修改售后申请页面');
+                    // 实际应用中这里应该跳转到修改页面
+                });
+            }
+            
+            // 申请平台介入
+            if (document.getElementById('platformInterveneBtn')) {
+                document.getElementById('platformInterveneBtn').addEventListener('click', function() {
+                    alert('跳转到平台介入申请页面');
+                    // 实际应用中这里应该跳转到平台介入页面
+                });
+            }
+            
+            // 撤销售后
+            if (document.getElementById('cancelBtn')) {
+                document.getElementById('cancelBtn').addEventListener('click', function() {
+                    if (confirm('确定要撤销售后申请吗？')) {
+                        alert('售后申请已撤销');
+                        // 实际应用中这里应该有撤销售后的API调用
+                    }
+                });
+            }
+        }
+        
+        // 根据售后状态更新状态显示区域的样式和内容
+        function updateStatusDisplay(status) {
+            const statusSection = document.getElementById('statusSection');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusDesc = document.getElementById('statusDesc');
+            
+            // 清除所有状态类
+            statusSection.className = 'status-section';
+            
+            // 根据状态更新样式和内容
+            switch(status) {
+                case 'APPLIED':
+                    statusSection.classList.add('pending');
+                    statusTitle.textContent = '待商户处理';
+                    statusDesc.textContent = '您的售后申请已提交，商家将在48小时内审核';
+                    break;
+                case 'WAIT_RETURN':
+                    statusSection.classList.add('processing');
+                    statusTitle.textContent = '等待您退货';
+                    statusDesc.textContent = '商家已同意您的退货申请，请在7天内填写物流信息并寄出商品';
+                    break;
+                case 'USER_SHIPPED':
+                    statusSection.classList.add('processing');
+                    statusTitle.textContent = '等待商家收货';
+                    statusDesc.textContent = '您已寄出商品，商家将在收到商品后进行处理，请耐心等待';
+                    break;
+                case 'MERCHANT_RECEIVED':
+                    statusSection.classList.add('processing');
+                    statusTitle.textContent = '商家已收货';
+                    statusDesc.textContent = '商家已收到您退回的商品，正在为您处理退款';
+                    break;
+                case 'REFUNDING':
+                    statusSection.classList.add('processing');
+                    statusTitle.textContent = '退款中';
+                    statusDesc.textContent = '退款申请已提交，预计1-7个工作日内到账，请耐心等待';
+                    break;
+                case 'COD_REFUND_PENDING':
+                    statusSection.classList.add('processing');
+                    statusTitle.textContent = '等待确认退款';
+                    statusDesc.textContent = '货到付款订单退款已处理，请确认是否已收到退款';
+                    break;
+                case 'SUCCESS':
+                    statusSection.classList.add('success');
+                    statusTitle.textContent = '退款成功';
+                    statusDesc.textContent = '您的退款已成功到账，请查收';
+                    break;
+                case 'REJECTED':
+                    statusSection.classList.add('rejected');
+                    statusTitle.textContent = '商家拒绝';
+                    statusDesc.textContent = '商家拒绝了您的售后申请，您可以选择修改申请或申请平台介入';
+                    break;
+                case 'CANCELED':
+                    statusSection.classList.add('canceled');
+                    statusTitle.textContent = '已撤销';
+                    statusDesc.textContent = '您已撤销该售后申请';
+                    break;
+                case 'CLOSED':
+                    statusSection.classList.add('canceled');
+                    statusTitle.textContent = '已关闭';
+                    statusDesc.textContent = '此售后申请已关闭';
+                    break;
+                default:
+                    statusSection.classList.add('pending');
+                    statusTitle.textContent = '待商户处理';
+                    statusDesc.textContent = '您的售后申请已提交，商家将在48小时内审核';
+            }
+        }
+        
+        // 更新时间线的活跃状态
+        function updateTimeline(status) {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            
+            // 清除所有活跃状态
+            timelineItems.forEach(item => item.classList.remove('active'));
+            
+            // 根据状态设置时间线活跃项
+            switch(status) {
+                case 'APPLIED':
+                    if (timelineItems[0]) timelineItems[0].classList.add('active');
+                    break;
+                case 'WAIT_RETURN':
+                case 'USER_SHIPPED':
+                case 'MERCHANT_RECEIVED':
+                    if (timelineItems[0]) timelineItems[0].classList.add('active');
+                    if (timelineItems[1]) timelineItems[1].classList.add('active');
+                    break;
+                case 'REFUNDING':
+                case 'COD_REFUND_PENDING':
+                    if (timelineItems[0]) timelineItems[0].classList.add('active');
+                    if (timelineItems[1]) timelineItems[1].classList.add('active');
+                    if (timelineItems[2]) timelineItems[2].classList.add('active');
+                    break;
+                case 'SUCCESS':
+                    timelineItems.forEach(item => item.classList.add('active'));
+                    break;
+                case 'REJECTED':
+                case 'CANCELED':
+                case 'CLOSED':
+                    if (timelineItems[0]) timelineItems[0].classList.add('active');
+                    break;
+                default:
+                    if (timelineItems[0]) timelineItems[0].classList.add('active');
+            }
+        }
+        
+        // 根据状态完整更新页面
+        function updatePageByStatus(status) {
+            updateStatusDisplay(status);
+            updateTimeline(status);
+            updateActionButtons(status);
+        }
+        
+        // 初始化 - 这里可以根据实际状态更新UI
+        // 示例：更新为APPLIED状态
+        // updatePageByStatus('APPLIED');
+        // 可以根据实际需求调用此函数更新UI
+    </script>
+</body>
+</html>

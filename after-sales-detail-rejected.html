@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>售后详情 - 拒绝</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #f5f5f5;
+            line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background-color: #fff;
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .header-back {
+            position: absolute;
+            left: 15px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header-back::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-left: 2px solid #333;
+            border-top: 2px solid #333;
+            transform: rotate(-45deg);
+        }
+        
+        .content {
+            padding-top: 50px;
+            padding-bottom: 80px;
+        }
+        
+        /* 默认状态样式 - 待处理 */
+        .status-section {
+            border-radius: 0;
+            padding: 25px 20px;
+            margin-bottom: 15px;
+        }
+        
+        .status-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .status-desc {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* 待处理状态 - 橙色 */
+        .status-section.pending {
+            background-color: #fff3e5;
+        }
+        
+        .status-section.pending .status-title,
+        .status-section.pending .status-desc {
+            color: #ff6b00;
+        }
+        
+        /* 处理中状态 - 蓝色 */
+        .status-section.processing {
+            background-color: #e6f7ff;
+        }
+        
+        .status-section.processing .status-title,
+        .status-section.processing .status-desc {
+            color: #1890ff;
+        }
+        
+        /* 成功状态 - 绿色 */
+        .status-section.success {
+            background-color: #f6ffed;
+        }
+        
+        .status-section.success .status-title,
+        .status-section.success .status-desc {
+            color: #52c41a;
+        }
+        
+        /* 拒绝状态 - 红色 */
+        .status-section.rejected {
+            background-color: #fff1f0;
+        }
+        
+        .status-section.rejected .status-title,
+        .status-section.rejected .status-desc {
+            color: #ff4d4f;
+        }
+        
+        /* 取消状态 - 灰色 */
+        .status-section.canceled {
+            background-color: #f5f5f5;
+        }
+        
+        .status-section.canceled .status-title,
+        .status-section.canceled .status-desc {
+            color: #999;
+        }
+        
+        .timeline {
+            padding: 0 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 20px;
+            bottom: 0;
+            width: 2px;
+            background-color: #e0e0e0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #ff4d4f;
+            margin-right: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .timeline-item:not(.active) .timeline-dot {
+            background-color: #e0e0e0;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 20px;
+        }
+        
+        .timeline-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-description {
+            color: #666;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .info-card {
+            background-color: #fff;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 15px 20px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            background-color: #fafafa;
+        }
+        
+        .info-content {
+            padding: 15px 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #333;
+            text-align: right;
+            flex: 1;
+            text-align: right;
+            margin-left: 15px;
+        }
+        
+        .product-card {
+            display: flex;
+            padding: 15px 20px;
+            background-color: #fff;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        
+        .product-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .product-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-spec {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            color: #ff4d4f;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .product-quantity {
+            color: #999;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            gap: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            height: 40px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: #ff4d4f;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #cf1322;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-default:hover {
+            border-color: #ff4d4f;
+            color: #ff4d4f;
+        }
+        
+        .highlight {
+            color: #ff4d4f;
+            font-weight: 600;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .reject-info {
+            padding: 20px;
+            background-color: #fff1f0;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        
+        .reject-info-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ff4d4f;
+            margin-bottom: 10px;
+        }
+        
+        .reject-info-content {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .reject-info-content p {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <div class="header">
+        <div class="header-back"></div>
+        <div class="header-title">售后详情</div>
+    </div>
+    
+    <div class="container">
+        <div class="content">
+            <!-- 状态显示 - 拒绝（红色） -->
+            <div class="status-section rejected">
+                <div class="status-title">售后被拒绝</div>
+                <div class="status-desc">您的售后申请未通过审核，如需帮助请联系客服</div>
+            </div>
+            
+            <!-- 拒绝原因信息 -->
+            <div class="reject-info">
+                <div class="reject-info-title">拒绝原因</div>
+                <div class="reject-info-content">
+                    <p><strong>拒绝时间：</strong>2023-10-27 16:20:48</p>
+                    <p><strong>拒绝原因：</strong>经核实，商品与描述一致，不符合退款条件</p>
+                    <p><strong>商家说明：</strong>根据平台规则，商品功能和描述一致的情况下，不支持无理由退货</p>
+                </div>
+            </div>
+            
+            <!-- 进度时间轴 -->
+            <div class="timeline">
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">已提交售后申请</div>
+                        <div class="timeline-time">2023-10-27 14:30:25</div>
+                        <div class="timeline-description">您已成功提交售后申请，我们将尽快为您处理。</div>
+                    </div>
+                </div>
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">售后申请被拒绝</div>
+                        <div class="timeline-time">2023-10-27 16:20:48</div>
+                        <div class="timeline-description">很抱歉，您的售后申请未通过审核，请查看拒绝原因。</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">商家同意申请</div>
+                        <div class="timeline-time"></div>
+                        <div class="timeline-description">商家已同意您的售后申请，准备为您处理。</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">退款完成</div>
+                        <div class="timeline-time"></div>
+                        <div class="timeline-description">您的退款已完成，请注意查收。</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 商品信息 -->
+            <div class="product-card">
+                <img src="../images/product.jpg" alt="商品图片" class="product-image">
+                <div class="product-details">
+                    <div>
+                        <div class="product-title">高级蓝牙耳机 主动降噪 长续航 无线充电</div>
+                        <div class="product-spec">颜色: 黑色 | 版本: 标准版</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <div class="product-price">¥299.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 售后信息 -->
+            <div class="info-card">
+                <div class="info-title">售后信息</div>
+                <div class="info-content">
+                    <div class="info-row">
+                        <div class="info-label">售后单号</div>
+                        <div class="info-value">AS2023102700001</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">售后类型</div>
+                        <div class="info-value">仅退款</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">申请原因</div>
+                        <div class="info-value">商品与描述不符</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">补充说明</div>
+                        <div class="info-value">收到的商品与页面描述有差异，希望退款</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">申请金额</div>
+                        <div class="info-value">¥299.00</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">申请时间</div>
+                        <div class="info-value">2023-10-27 14:30:25</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">支付方式</div>
+                        <div class="info-value">货到付款(COD)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 订单信息 -->
+            <div class="info-card">
+                <div class="info-title">订单信息</div>
+                <div class="info-content">
+                    <div class="info-row">
+                        <div class="info-label">订单编号</div>
+                        <div class="info-value">2023102600001</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">下单时间</div>
+                        <div class="info-value">2023-10-26 10:15:30</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">支付时间</div>
+                        <div class="info-value">货到付款(未在线支付)</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">收货地址</div>
+                        <div class="info-value">北京市朝阳区XX街道XX小区X号楼X单元XXX室</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-20"></div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <button class="btn btn-default" id="modifyBtn">修改申请</button>
+            <button class="btn btn-default" id="platformBtn">平台介入</button>
+            <button class="btn btn-primary" id="serviceBtn">联系客服</button>
+        </div>
+    </div>
+    
+    <script>
+        // 返回按钮点击事件
+        document.querySelector('.header-back').addEventListener('click', function() {
+            window.history.back();
+        });
+        
+        // 修改申请按钮点击事件
+        document.getElementById('modifyBtn').addEventListener('click', function() {
+            // 实际应用中这里应该跳转到修改申请页面
+            alert('跳转到修改申请页面');
+        });
+        
+        // 平台介入按钮点击事件
+        document.getElementById('platformBtn').addEventListener('click', function() {
+            alert('平台介入申请已提交，我们将尽快处理');
+            // 实际应用中这里应该有平台介入的API调用
+        });
+        
+        // 联系客服按钮点击事件
+        document.getElementById('serviceBtn').addEventListener('click', function() {
+            // 实际应用中这里应该跳转到客服聊天页面
+            alert('跳转到客服聊天页面');
+        });
+    </script>
+</body>
+</html>
